@@ -10,9 +10,11 @@ Set the web sites root directory in the nginx config to /var/www/html/twitch_api
 
 If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
 
+If running this on a public server, I recommend using Cloudflare for its Proxy, DDOS, Firewall and Rate-Limiting features.
+
 
 ## NGINX Config Example
-```
+```nginx
 server {
     listen 443;
     root /var/www/html/twitch_api_public/public;
@@ -74,7 +76,9 @@ server {
 - Rename config/sample.secret to .secret
 - Rename config/sample.config.php to config.php
 
-Visit https://dev.twitch.tv/ to register your application. Select Category > Chat Bot and add your applications domain/OAuth Redirect URLs.
+Visit https://dev.twitch.tv/ to register your application. 
+
+Select Category > Chat Bot and add your applications domain/OAuth Redirect URLs.
 
 - Add your Twitch client ID to the .client file.
 
@@ -107,7 +111,7 @@ https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
 jQuery Ajax Example:
 
 ```javascript
-$.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100", success: function(result) {
+$.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer", success: function(result) {
 	$("#div1").html(result.data[0]['display_name']);
 }});
 ```
@@ -116,7 +120,7 @@ JavaScript Example:
 
 ```javascript
 let getUserInfo = function (channel, callback) {
-    let url = "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100";
+    let url = "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.onreadystatechange = function () {
@@ -137,14 +141,14 @@ getUserInfo(getChannel, function (result) {
 
 CURL:
 
-```curl
-curl -X GET 'https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100'
+```bash
+curl -X GET 'https://example.com/getuserinfo.php?channel=MrCoolStreamer'
 ```
 
 PHP using CURL Example:
 
 ```php
-curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100";
+curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($ch);
 echo "<div id='div1'>" . $result.data[0]['display_name'] . "</div>";
