@@ -1,5 +1,17 @@
 ## More documentation and instructions coming soon!
 
+## Instructions and Notes
+
+Rename config/sample.auth to .auth
+Rename config/sample.client to .client
+Rename config/sample.domain to .domain
+Rename config/sample.secret to .secret
+
+
+Add your Twitch client ID to the .client file
+Add your Twitch secret to the .secret file
+These are needed to generate your Twitch oAuth token.
+
 
 ## Requirements
 
@@ -61,4 +73,3 @@ server {
     }
 }
 ```
-
