@@ -1,3 +1,12 @@
+## More documentation and instructions coming soon!
+
+
+## Requirements
+
+Linux server running Nginx, PHP, PHP-FPM, cUrl
+
+Set the web sites root directory in the nginx condig to /var/www/html/twitch_api/public and not the entire /var/www/html directory
+
 ## NGINX Config Example for HTTPS/SSL Only
 ```
 server {
