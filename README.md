@@ -22,7 +22,7 @@ These are needed to generate your Twitch oAuth token.
 
 Linux server running nginx, php, php-fpm, curl.
 
-Set the web sites root directory in the nginx config to /var/www/html/twitch_api/public and not the entire /var/www/html directory.
+Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
 
 ## NGINX Config Example for HTTPS/SSL Only
 ```
@@ -31,9 +31,6 @@ server {
     root /var/www/html/twitch_api_public/public;
     index index.php;
     server_name example.com;
-
-    root /var/www/html/twitch_api/public;
-    index index.php;
 
     location / {
         # First attempt to serve request as file, then as directory, then fall back to index.php
