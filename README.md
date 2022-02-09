@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id, auth token into your code and manually refreshing your auth token every 3 months. All requests use GET to pull data. Nothing is posted back to Twitch.
+This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. No need to first get the user id before making other requests. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id, auth token into your code and manually refreshing your auth token every 3 months. Auth token refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch.
 
 ## Requirements
 
@@ -129,6 +129,16 @@ let getUserInfo = function (channel, callback) {
     };
     xhr.send();
 };
+
+getUserInfo(getChannel, function (result) {
+    document.getElementById("div1").innerHTML = "<span class='user-name'>" + result.data[0]['display_name'] + "</span>"
+});
+```
+
+CURL:
+
+```curl
+curl -X GET 'https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100'
 ```
 
 PHP using CURL Example:
@@ -137,5 +147,5 @@ PHP using CURL Example:
 curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100";
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($ch);
-echo $result;
+echo "<div id='div1'>" . $result.data[0]['display_name'] . "</div>";
 ```
