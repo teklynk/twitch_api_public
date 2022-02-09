@@ -1,32 +1,17 @@
-## More documentation and instructions coming soon!
+## What is this?
 
-## Instructions and Notes
-
-Rename config/sample.auth to .auth
-
-Rename config/sample.client to .client
-
-Rename config/sample.domain to .domain
-
-Rename config/sample.secret to .secret
-
-
-Add your Twitch client ID to the .client file.
-
-Add your Twitch secret to the .secret file.
-
-These are needed to generate your Twitch oAuth token.
-
-Visit https://dev.twitch.tv/ to register your application. Select Category > Chat Bot and add your appications domain/OAuth Redirect URLs. Get your Client Secret and add it to the .secret file. Add your Client ID to the .client file. 
+This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id, auth token into your code and manually refreshing your auth token every 3 months. All requests use GET to pull data. Nothing is posted back to Twitch.
 
 ## Requirements
 
-Linux server running nginx, php, php-fpm, curl.
+Linux server running nginx, php, php-fpm, curl. No Database needed.
 
 Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
 
+If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
 
-## NGINX Config Example for HTTPS/SSL Only
+
+## NGINX Config Example
 ```
 server {
     listen 443;
@@ -76,4 +61,81 @@ server {
         fastcgi_pass unix:/run/php-fpm.sock;
     }
 }
+```
+
+## Instructions and Notes
+
+- Rename config/sample.auth to .auth
+
+- Rename config/sample.client to .client
+
+- Rename config/sample.domain to .domain
+
+- Rename config/sample.secret to .secret
+- Rename config/sample.config.php to config.php
+
+Visit https://dev.twitch.tv/ to register your application. Select Category > Chat Bot and add your applications domain/OAuth Redirect URLs.
+
+- Add your Twitch client ID to the .client file.
+
+- Add your Twitch secret to the .secret file.
+
+These files are needed to generate your Twitch oAuth token.
+
+## Getting data
+
+Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and has a max limit of 100.
+
+**Requests:**
+
+https://example.com/getuserstatus.php?channel=MrCoolStreamer
+
+https://example.com/getuserinfo.php?channel=MrCoolStreamer
+
+https://example.com/getstream.php?channel=MrCoolStreamer
+
+https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100
+
+https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100
+
+https://example.com/getuseremotes.php?channel=MrCoolStreamer&limit=100
+
+https://example.com/getglobalemotes.php
+
+https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
+
+jQuery Ajax Example:
+
+```javascript
+$.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100", success: function(result) {
+	$("#div1").html(result.data[0]['display_name']);
+}});
+```
+
+JavaScript Example:
+
+```javascript
+let getUserInfo = function (channel, callback) {
+    let url = "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100";
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            callback(JSON.parse(xhr.responseText));
+            return true;
+        } else {
+            return false;
+        }
+    };
+    xhr.send();
+};
+```
+
+PHP using CURL Example:
+
+```php
+curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer&limit=100";
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$result = curl_exec($ch);
+echo $result;
 ```
