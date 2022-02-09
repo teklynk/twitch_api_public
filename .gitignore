@@ -1,0 +1,6 @@
+.idea
+config/config.php
+config/.auth
+config/.client
+config/.secret
+config/.domain
