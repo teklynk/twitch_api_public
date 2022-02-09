@@ -3,21 +3,26 @@
 ## Instructions and Notes
 
 Rename config/sample.auth to .auth
+
 Rename config/sample.client to .client
+
 Rename config/sample.domain to .domain
+
 Rename config/sample.secret to .secret
 
 
-Add your Twitch client ID to the .client file
-Add your Twitch secret to the .secret file
+Add your Twitch client ID to the .client file.
+
+Add your Twitch secret to the .secret file.
+
 These are needed to generate your Twitch oAuth token.
 
 
 ## Requirements
 
-Linux server running Nginx, PHP, PHP-FPM, cUrl
+Linux server running nginx, php, php-fpm, curl.
 
-Set the web sites root directory in the nginx condig to /var/www/html/twitch_api/public and not the entire /var/www/html directory
+Set the web sites root directory in the nginx config to /var/www/html/twitch_api/public and not the entire /var/www/html directory.
 
 ## NGINX Config Example for HTTPS/SSL Only
 ```
