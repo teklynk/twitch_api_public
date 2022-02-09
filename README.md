@@ -17,12 +17,14 @@ Add your Twitch secret to the .secret file.
 
 These are needed to generate your Twitch oAuth token.
 
+Visit https://dev.twitch.tv/ to register your application. Select Category > Chat Bot and add your appications domain/OAuth Redirect URLs. Get your Client Secret and add it to the .secret file. Add your Client ID to the .client file. 
 
 ## Requirements
 
 Linux server running nginx, php, php-fpm, curl.
 
 Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
+
 
 ## NGINX Config Example for HTTPS/SSL Only
 ```
