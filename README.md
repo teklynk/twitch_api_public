@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. No need to first get the user id before making other requests. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id, auth token into your code and manually refreshing your auth token every 3 months. Auth token refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch.
+This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. No need to first get the user id before making other requests. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch.
 
 ## Requirements
 
@@ -10,7 +10,7 @@ Set the web sites root directory in the nginx config to /var/www/html/twitch_api
 
 If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
 
-If running this on a public server, I recommend using Cloudflare for its Proxy, DDOS, Firewall and Rate-Limiting features.
+If running this on a public server, I recommend using [Cloudflare](https://www.cloudflare.com/) for its Proxy, DDoS, Firewall and Rate-Limiting features.
 
 
 ## NGINX Config Example
@@ -112,7 +112,7 @@ jQuery Ajax Example:
 
 ```javascript
 $.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer", success: function(result) {
-	$("#div1").html(result.data[0]['display_name']);
+	$("#div1").html("<span class='user-name'>" + result.data[0]['display_name'] + "</span>");
 }});
 ```
 
@@ -151,7 +151,7 @@ PHP using CURL Example:
 curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($ch);
-echo "<div id='div1'>" . $result.data[0]['display_name'] . "</div>";
+echo "<div id='div1'><span class='user-name'>" . $result.data[0]['display_name'] . "</span></div>";
 ```
 
 Example Response:
