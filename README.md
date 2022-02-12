@@ -74,7 +74,6 @@ server {
 - Rename config/sample.domain to .domain
 
 - Rename config/sample.secret to .secret
-- Rename config/sample.config.php to config.php
 
 Visit https://dev.twitch.tv/ to register your application. 
 
