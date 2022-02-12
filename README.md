@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a way to run your own Twitch API "gate-way" service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON data.
+This is a way to run your own Twitch API "gate-way" service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON string.
 
 ## Requirements
 
@@ -67,17 +67,17 @@ server {
 
 ## Instructions and Notes
 
-- Rename config/sample.auth to .auth
+- **Rename** config/sample.auth to .auth
 
-- Rename config/sample.client to .client
+- **Rename** config/sample.client to .client
 
-- Rename config/sample.domain to .domain
+- **Rename** config/sample.secret to .secret
 
-- Rename config/sample.secret to .secret
-
-Visit https://dev.twitch.tv/ to register your application. 
-
-Select Category > Chat Bot and add your applications domain/OAuth Redirect URLs.
+- Visit https://dev.twitch.tv/ to register your application. 
+- On the dev.twitch.tv site, click "Your Console" in the upper right. Under "Applications" click "Register Your Application". 
+- Give your Application a Name.
+- OAuth Redirect URLs. When testing locally, you can set this to http://localhost. I like to add localhost and my public domain name entry. This will allow your domain(s) access to the Twitch API. (These domains with this OAuth token and client ID are allowed to access the Twitch API)
+- Select Category > Chat Bot.
 
 - Add your Twitch client ID to the .client file.
 
