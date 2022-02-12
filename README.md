@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. No need to first get the user id before making other requests. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch.
+This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON data.
 
 ## Requirements
 
@@ -88,9 +88,9 @@ These files are needed to generate your Twitch oAuth token.
 
 ## Getting data
 
-Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and has a max limit of 100.
+Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and have a max limit of 100.
 
-**Requests:**
+**Example Requests:**
 
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 
@@ -112,7 +112,7 @@ jQuery Ajax Example:
 
 ```javascript
 $.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer", success: function(result) {
-	$("#div1").html("<span class='user-name'>" + result.data[0]['display_name'] + "</span>");
+	console.log(result);
 }});
 ```
 
@@ -120,7 +120,7 @@ JavaScript Example:
 
 ```javascript
 let getUserInfo = function (channel, callback) {
-    let url = "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
+    let url = "https://example.com/getuserinfo.php?channel=" + channel;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.onreadystatechange = function () {
@@ -134,8 +134,9 @@ let getUserInfo = function (channel, callback) {
     xhr.send();
 };
 
-getUserInfo(getChannel, function (result) {
-    document.getElementById("div1").innerHTML = "<span class='user-name'>" + result.data[0]['display_name'] + "</span>"
+getUserInfo("MrCoolStreamer", function (result) {
+	console.log(result.data[0]);
+	document.getElementById("div1").innerHTML = "<span class='user-name'>" + result.data[0]['display_name'] + "</span>"
 });
 ```
 
@@ -148,7 +149,7 @@ curl -X GET 'https://example.com/getuserinfo.php?channel=MrCoolStreamer'
 PHP using CURL Example:
 
 ```php
-curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
+curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($ch);
 echo "<div id='div1'><span class='user-name'>" . $result.data[0]['display_name'] . "</span></div>";
