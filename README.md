@@ -110,7 +110,8 @@ https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
 jQuery Ajax Example:
 
 ```javascript
-$.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer", success: function(result) {
+let channel = "MrCoolStreamer";
+$.ajax({url: "https://example.com/getuserinfo.php?channel=" + channel, success: function(result) {
 	console.log(result);
 }});
 ```
@@ -134,7 +135,7 @@ let getUserInfo = function (channel, callback) {
 };
 
 getUserInfo("MrCoolStreamer", function (result) {
-	console.log(result.data[0]);
+	console.log(result);
 });
 ```
 
