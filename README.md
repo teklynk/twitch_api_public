@@ -114,6 +114,14 @@ let channel = "MrCoolStreamer";
 $.ajax({url: "https://example.com/getuserinfo.php?channel=" + channel, success: function(result) {
 	console.log(result);
 }});
+
+// Example2: Json data - Ajax call
+let clips_json = JSON.parse($.getJSON({
+	'url': "https://example.com/getuserclips.php?channel=" + channel + "&limit=100",
+	'async': false
+}).responseText);
+
+console.log(clips_json.data[0]['thumbnail_url']);
 ```
 
 JavaScript Example:
