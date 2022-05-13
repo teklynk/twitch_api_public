@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a way to run your own Twitch API service that only requires the user name/channel name to pull data. No need to first get the user id before making other requests. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch.
+This is a way to run your own Twitch API "gate-way" service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON string.
 
 ## Requirements
 
@@ -65,18 +65,17 @@ server {
 
 ## Instructions and Notes
 
-- Rename config/sample.auth to .auth
+- **Rename** config/sample.auth to .auth
 
-- Rename config/sample.client to .client
+- **Rename** config/sample.client to .client
 
-- Rename config/sample.domain to .domain
+- **Rename** config/sample.secret to .secret
 
-- Rename config/sample.secret to .secret
-- Rename config/sample.config.php to config.php
-
-Visit https://dev.twitch.tv/ to register your application. 
-
-Select Category > Chat Bot and add your applications domain/OAuth Redirect URLs.
+- Visit https://dev.twitch.tv/ to register your application. 
+- On the dev.twitch.tv site, click "Your Console" in the upper right. Under "Applications" click "Register Your Application". 
+- Give your Application a Name.
+- OAuth Redirect URLs. When testing locally, you can set this to http://localhost. I like to add localhost and my public domain name entry. This will allow your domain(s) access to the Twitch API. (These domains with this OAuth token and client ID are allowed to access the Twitch API)
+- Select Category > Chat Bot.
 
 - Add your Twitch client ID to the .client file.
 
@@ -86,9 +85,9 @@ These files are needed to generate your Twitch oAuth token.
 
 ## Getting data
 
-Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and has a max limit of 100.
+Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and have a max limit of 100.
 
-**Requests:**
+**Example Requests:**
 
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 
@@ -113,16 +112,25 @@ https://example.com/getgame.php?id=23123
 jQuery Ajax Example:
 
 ```javascript
-$.ajax({url: "https://example.com/getuserinfo.php?channel=MrCoolStreamer", success: function(result) {
-	$("#div1").html("<span class='user-name'>" + result.data[0]['display_name'] + "</span>");
+let channel = "MrCoolStreamer";
+$.ajax({url: "https://example.com/getuserinfo.php?channel=" + channel, success: function(result) {
+	console.log(result);
 }});
+
+// Example2: Json data - Ajax call
+let clips_json = JSON.parse($.getJSON({
+	'url': "https://example.com/getuserclips.php?channel=" + channel + "&limit=100",
+	'async': false
+}).responseText);
+
+console.log(clips_json.data[0]['thumbnail_url']);
 ```
 
 JavaScript Example:
 
 ```javascript
 let getUserInfo = function (channel, callback) {
-    let url = "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
+    let url = "https://example.com/getuserinfo.php?channel=" + channel;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.onreadystatechange = function () {
@@ -136,8 +144,8 @@ let getUserInfo = function (channel, callback) {
     xhr.send();
 };
 
-getUserInfo(getChannel, function (result) {
-    document.getElementById("div1").innerHTML = "<span class='user-name'>" + result.data[0]['display_name'] + "</span>"
+getUserInfo("MrCoolStreamer", function (result) {
+	console.log(result);
 });
 ```
 
@@ -150,10 +158,12 @@ curl -X GET 'https://example.com/getuserinfo.php?channel=MrCoolStreamer'
 PHP using CURL Example:
 
 ```php
-curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer";
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://example.com/getuserinfo.php?channel=MrCoolStreamer");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($ch);
-echo "<div id='div1'><span class='user-name'>" . $result.data[0]['display_name'] . "</span></div>";
+curl_close($ch);
+var_dump($result);
 ```
 
 Example Response:

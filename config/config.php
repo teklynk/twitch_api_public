@@ -12,7 +12,6 @@ $authtoken = '';
 // Note: The files are hidden from the file system
 define('CLIENT_ID', file_get_contents(__DIR__ . '/.client'));
 define('CLIENT_SECRET', file_get_contents(__DIR__ . '/.secret'));
-define('API_DOMAIN', file_get_contents(__DIR__ . '/.domain'));
 
 // Refresh oAuth Token automatically
 if ($date_now != $authFileModDate) {
