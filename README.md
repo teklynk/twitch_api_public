@@ -89,6 +89,17 @@ Requests are returned in JSON format so that you can parse the data as needed. S
 
 **Example Requests:**
 
+Pagination is possibile with &after=cursor_value and &before=cursor_value
+You can get the cursor value from the first request.
+```json
+"pagination": {
+  "cursor": "eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0"
+}
+```
+Example: https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0
+will pull the next 100 follows.
+
+
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 
 https://example.com/getuserinfo.php?channel=MrCoolStreamer
