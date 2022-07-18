@@ -1,6 +1,4 @@
 <?php
-define('ALLOW_INC', true);
-
 require_once(__DIR__ . '/../config/config.php');
 
 $ch = curl_init();

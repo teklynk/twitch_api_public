@@ -1,6 +1,4 @@
 <?php
-define('ALLOW_INC', true);
-
 require_once(__DIR__ . '/../config/config.php');
 
 $limit = trim($_GET['limit']);
