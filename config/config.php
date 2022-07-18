@@ -20,9 +20,13 @@ if (strtotime($date_now) > strtotime($authFileModDate) || file_get_contents($aut
 
     curl_close($ch);
 
-    $writeauthtoken = $Result['access_token'];
+    if ($Result['status'] != 403) {
+        $writeauthtoken = $Result['access_token'];
+    } else {
+        $writeauthtoken = '';
+    }
 
-    if ($writeauthtoken) {
+    if ($writeauthtoken > '') {
         // Write auth token to .auth file
         file_put_contents($authFile, $writeauthtoken);
     }
