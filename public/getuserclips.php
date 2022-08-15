@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../config/config.php');
 $limit = trim($_GET['limit']);
 $after = trim($_GET['after']);
 $before = trim($_GET['before']);
+$random = trim($_GET['random']);
 
 if (!empty($after)) {
     $afterVar = "&after=" . $after;
@@ -19,7 +20,7 @@ if (!empty($before)) {
     $beforeVar = "";
 }
 
-if ($limit > 100 ) {
+if ($limit > 100) {
     $limit = 100;
 }
 
@@ -48,13 +49,18 @@ $userData = json_decode($userResponse, true);
 //create a new array using the userData json
 $itemsArray = array();
 
+$itemCount = 0;
+
 foreach ($userData['data'] as $data) {
 
     // Use the thumbnail url to create the clip url
     $clip_url = explode("-preview-", $data['thumbnail_url']);
     $clip_url = $clip_url[0] . ".mp4";
 
+    $itemCount++;
+
     $itemsArray[] = array(
+        "item" => $itemCount,
         "id" => $data['id'],
         "url" => $data['url'],
         "embed_url" => $data['embed_url'],
@@ -76,10 +82,32 @@ foreach ($userData['data'] as $data) {
 }
 
 $dataArray = array(
-    "data" => $itemsArray,
+    "data" => $itemsArray
 );
 
-echo json_encode($dataArray);
+// Pull a single random clip
+if (!empty($random) && $random == "true") {
+
+    $array_item = array();
+
+    $array_count = count($dataArray['data']);
+
+    $array_random = rand(0, $array_count - 1);
+
+    $array_item[] = $dataArray['data'][$array_random];
+
+    $array_data = array(
+        "data" => $array_item
+    );
+
+    echo json_encode($array_data);
+
+} else {
+
+    // Get all clips
+    echo json_encode($dataArray);
+
+}
 
 curl_close($ch);
 ?>
