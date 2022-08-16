@@ -10,6 +10,7 @@ Set the web sites root directory in the nginx config to /var/www/html/twitch_api
 
 If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
 
+
 If running this on a public server, I recommend using [Cloudflare](https://www.cloudflare.com/) for its Proxy, DDoS, Firewall and Rate-Limiting features.
 
 
