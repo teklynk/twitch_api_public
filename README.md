@@ -100,11 +100,16 @@ You can get the cursor value from the first request.
 Example: https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0
 will pull the next 100 follows.
 
-
-getuserclips.php can pull a single Random clip with: &random=true
+*Pull a single Random clip with: &random=true
 
 Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true
 
+*Pull a single clip by its ID: &id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
+
+Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
+
+
+*Other Examples:
 
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 

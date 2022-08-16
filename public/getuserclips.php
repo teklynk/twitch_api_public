@@ -5,6 +5,10 @@ $limit = trim($_GET['limit']);
 $after = trim($_GET['after']);
 $before = trim($_GET['before']);
 $random = trim($_GET['random']);
+$id = trim($_GET['id']);
+$itemCount = 0;
+
+$itemsArray = array();
 
 if (!empty($after)) {
     $afterVar = "&after=" . $after;
@@ -43,13 +47,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $userResponse = curl_exec($ch);
 
-//echo $userResponse;
+//all clips data
 $userData = json_decode($userResponse, true);
-
-//create a new array using the userData json
-$itemsArray = array();
-
-$itemCount = 0;
 
 foreach ($userData['data'] as $data) {
 
@@ -85,7 +84,7 @@ $dataArray = array(
     "data" => $itemsArray
 );
 
-// Pull a single random clip
+// Pull a single random clip   IE: &random=true
 if (!empty($random) && $random == "true") {
 
     $array_item = array();
@@ -95,6 +94,23 @@ if (!empty($random) && $random == "true") {
     $array_random = rand(0, $array_count - 1);
 
     $array_item[] = $dataArray['data'][$array_random];
+
+    $array_data = array(
+        "data" => $array_item
+    );
+
+    echo json_encode($array_data);
+
+// Pull a specific clip by its ID/Slug   IE: &id=PowerfulCogentChinchillaBCWarrior-WRjKBjtHFKFDc1Dt
+} elseif (!empty($id)) {
+
+    $array_item = array();
+
+    foreach ($dataArray['data'] as $data) {
+        if ($data['id'] == $id) {
+            $array_item[] = $data;
+        }
+    }
 
     $array_data = array(
         "data" => $array_item
