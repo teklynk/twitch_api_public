@@ -88,7 +88,7 @@ These files are needed to generate your Twitch oAuth token.
 
 Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and have a max limit of 100.
 
-**Example Requests:**
+## Example Requests
 
 Pagination is possible with &after=cursor_value and &before=cursor_value
 You can get the cursor value from the first request.
@@ -109,7 +109,7 @@ Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&r
 Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 
 
-*Other Examples:
+## Other Examples:
 
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 
@@ -188,7 +188,7 @@ curl_close($ch);
 var_dump($result);
 ```
 
-Example Response:
+Example Responses:
 
 ```json
 {
@@ -204,6 +204,35 @@ Example Response:
       "offline_image_url": "https://static-cdn.jtvnw.net/jtv_user_pictures/3f13ab61-ec78-4fe6-8481-8682cb3b0ac2-channel_offline_image-1920x1080.png",
       "view_count": 5980557,
       "created_at": "2016-12-14T20:32:28Z"
+    }
+  ]
+}
+```
+## Clips
+getuserclips.php
+
+```json
+{
+  "data": [
+    {
+      "item": 22,
+      "id": "VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
+      "url": "https://clips.twitch.tv/VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
+      "embed_url": "https://clips.twitch.tv/embed?clip=VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
+      "broadcaster_id": "159805577",
+      "broadcaster_name": "Teklynk",
+      "creator_id": "141981764",
+      "creator_name": "MrCoolStreamer",
+      "video_id": "",
+      "game_id": "509670",
+      "language": "en",
+      "title": "I don't know what is happening",
+      "view_count": 1,
+      "created_at": "2022-08-08T17:33:04Z",
+      "thumbnail_url": "https://clips-media-assets2.twitch.tv/_tduXpTTRFVsBuTb_XYZABC/vod-1543945678-offset-4866-preview-480x272.jpg",
+      "duration": 30,
+      "vod_offset": null,
+      "clip_url": "https://clips-media-assets2.twitch.tv/_tduXpTTRFVsBuTb_XYZABC/vod-1543945678-offset-4866.mp4"
     }
   ]
 }
