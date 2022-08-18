@@ -13,6 +13,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $viewerInfo = curl_exec($ch);
 
+header('Content-type: application/json');
+
 echo $viewerInfo;
 
 curl_close($ch);

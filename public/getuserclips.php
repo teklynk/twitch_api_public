@@ -99,6 +99,8 @@ if (!empty($random) && $random == "true") {
         "data" => $array_item
     );
 
+    header('Content-type: application/json');
+
     echo json_encode($array_data);
 
 // Pull a specific clip by its ID/Slug   IE: &id=PowerfulCogentChinchillaBCWarrior-WRjKBjtHFKFDc1Dt
@@ -116,11 +118,15 @@ if (!empty($random) && $random == "true") {
         "data" => $array_item
     );
 
+    header('Content-type: application/json');
+
     echo json_encode($array_data);
 
 } else {
 
     // Get all clips
+    header('Content-type: application/json');
+
     echo json_encode($dataArray);
 
 }

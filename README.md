@@ -131,6 +131,10 @@ https://example.com/getviewers.php?channel=MrCoolStreamer
 
 https://example.com/getgame.php?id=23123
 
+https://example.com/getuserschedule.php?channel=MrCoolStreamer
+
+https://example.com/getuserschedule.php?channel=MrCoolStreamer&ical=true - returns .ics download file that can imported into a calendar client.
+
 jQuery Ajax Example:
 
 ```javascript
