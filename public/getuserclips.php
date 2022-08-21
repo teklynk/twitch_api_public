@@ -106,21 +106,52 @@ if (!empty($random) && $random == "true") {
 // Pull a specific clip by its ID/Slug   IE: &id=PowerfulCogentChinchillaBCWarrior-WRjKBjtHFKFDc1Dt
 } elseif (!empty($id)) {
 
-    $array_item = array();
+    //Get user clips
+    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/clips?id=" . $id);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $userResponse = curl_exec($ch);
 
-    foreach ($dataArray['data'] as $data) {
-        if ($data['id'] == $id) {
-            $array_item[] = $data;
-        }
+    //all clips data
+    $userData = json_decode($userResponse, true);
+
+    foreach ($userData['data'] as $data) {
+
+        // Use the thumbnail url to create the clip url
+        $clip_url = explode("-preview-", $data['thumbnail_url']);
+        $clip_url = $clip_url[0] . ".mp4";
+
+        $itemCount++;
+
+        $itemsArray[] = array(
+            "item" => $itemCount,
+            "id" => $data['id'],
+            "url" => $data['url'],
+            "embed_url" => $data['embed_url'],
+            "broadcaster_id" => $data['broadcaster_id'],
+            "broadcaster_name" => $data['broadcaster_name'],
+            "creator_id" => $data['creator_id'],
+            "creator_name" => $data['creator_name'],
+            "video_id" => $data['video_id'],
+            "game_id" => $data['game_id'],
+            "language" => $data['language'],
+            "title" => $data['title'],
+            "view_count" => $data['view_count'],
+            "created_at" => $data['created_at'],
+            "thumbnail_url" => $data['thumbnail_url'],
+            "duration" => $data['duration'],
+            "vod_offset" => $data['vod_offset'],
+            "clip_url" => $clip_url
+        );
     }
 
-    $array_data = array(
-        "data" => $array_item
+    $dataArray = array(
+        "data" => $itemsArray
     );
 
     header('Content-type: application/json');
 
-    echo json_encode($array_data);
+    echo json_encode($dataArray);
 
 } else {
 
