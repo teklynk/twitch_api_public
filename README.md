@@ -104,9 +104,9 @@ will pull the next 100 follows.
 
 Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true
 
-*Pull a single clip by its ID: &id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
+*Pull a single clip by its ID: id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 
-Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
+Example: https://example.com/getuserclips.php?id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 
 
 ## Other Examples:
