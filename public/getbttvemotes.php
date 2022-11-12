@@ -22,16 +22,26 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $userInfo = curl_exec($ch);
 $userResult = json_decode($userInfo, true);
 
-//Get user status
+//Get user bttv emotes
 curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/users/twitch/" . $userResult['data'][0]['id']);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
 $userResponse = curl_exec($ch);
 
-//all bttvemotes data
+//Get global bttv emotes
+curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/emotes/global");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
+$globalResponse = curl_exec($ch);
+
+//user bttvemotes data
 $userData = json_decode($userResponse, true);
 
-$combindArr = array_merge($userData['channelEmotes'], $userData['sharedEmotes']);
+//global bttvemotes data
+$globalData = json_decode($globalResponse, true);
+
+//combine all bttvemotes into one array
+$combindArr = array_merge($userData['channelEmotes'], $userData['sharedEmotes'], $globalData);
 
 foreach ($combindArr as $data) {
     $ItemsArray[] = array(
