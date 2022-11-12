@@ -1,6 +1,9 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
+$ItemsArray = array();
+$combindArr = array();
+
 $ch = curl_init();
 
 $headers = [
@@ -25,9 +28,21 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
 $userResponse = curl_exec($ch);
 
+//all bttvemotes data
+$userData = json_decode($userResponse, true);
+
+$combindArr = array_merge($userData['channelEmotes'], $userData['sharedEmotes']);
+
+foreach ($combindArr as $data) {
+    $ItemsArray[] = array(
+        "id" => $data['id'],
+        "code" => $data['code']
+    );
+}
+
 header('Content-type: application/json');
 
-echo $userResponse;
+echo json_encode($ItemsArray);
 
 curl_close($ch);
 ?>
