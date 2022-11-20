@@ -135,6 +135,8 @@ https://example.com/getuserschedule.php?channel=MrCoolStreamer
 
 https://example.com/getuserschedule.php?channel=MrCoolStreamer&ical=true - returns .ics download file that can imported into a calendar client.
 
+https://example.com/getbttvemotes.php?channel=MrCoolStreamer
+
 jQuery Ajax Example:
 
 ```javascript
@@ -241,3 +243,51 @@ getuserclips.php
   ]
 }
 ```
+
+## BetterTTV Emotes
+getbttvemotes.php
+```json
+[
+  {
+    "id": "636ff60fb9076d0aaebbcf7c",
+    "code": "Tekbot"
+  },
+  {
+    "id": "5ba6d5ba6ee0c23989d52b10",
+    "code": "bongoTap"
+  },
+  {
+    "id": "5a6edb51f730010d194bdd46",
+    "code": "PepoDance"
+  },
+  {
+    "id": "5d922afbc0652668c9e52ead",
+    "code": "peepoArrive"
+  },
+  {
+    "id": "59f06613ba7cdd47e9a4cad2",
+    "code": "PartyParrot"
+  },
+  {
+    "id": "5c3427a55752683d16e409d1",
+    "code": "peepoPooPoo"
+  },
+  {
+    "id": "5bc7ff14664a3b079648dd66",
+    "code": "peepoRun"
+  },
+  {
+    "id": "5df2d1b7e7df1277b6070b1e",
+    "code": "pepeJAM"
+  },
+  {
+    "id": "5f21e57a65fe924464eecf0e",
+    "code": "catRAVE"
+  },
+  {
+    "id": "54fa8f1401e468494b85b537",
+    "code": ":tf:"
+  }
+]
+```
+BTTV Emote URL: https://cdn.betterttv.net/emote/5a970ab2122e4331029f0d7e/3x
