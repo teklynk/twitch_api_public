@@ -5,6 +5,8 @@ $limit = trim($_GET['limit']);
 $after = trim($_GET['after']);
 $before = trim($_GET['before']);
 $random = trim($_GET['random']);
+$start_date = trim($_GET['start_date']);
+$end_date = trim($_GET['end_date']);
 $id = trim($_GET['id']);
 $itemCount = 0;
 
@@ -28,6 +30,18 @@ if ($limit > 100) {
     $limit = 100;
 }
 
+if (!empty($start_date)) {
+    $start_dateVar = "&started_at=" . $start_date;
+} else {
+    $start_dateVar = "";
+}
+
+if (!empty($end_date)) {
+    $end_dateVar = "&ended_at=" . $end_date;
+} else {
+    $end_dateVar = "";
+}
+
 $ch = curl_init();
 
 $headers = [
@@ -42,7 +56,7 @@ $userInfo = curl_exec($ch);
 $userResult = json_decode($userInfo, true);
 
 //Get user clips
-curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $afterVar . $beforeVar);
+curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $afterVar . $beforeVar . $start_dateVar . $end_dateVar);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $userResponse = curl_exec($ch);
