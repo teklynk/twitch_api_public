@@ -8,13 +8,9 @@ $headers = [
     'Client-Id: ' . CLIENT_ID
 ];
 
-curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-$userInfo = curl_exec($ch);
-$userResult = json_decode($userInfo, true);
+// This will soon be depricated and will no longer work
 
-curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=" . $userResult['data'][0]['id'] . "&moderator_id=" . $userResult['data'][0]['id']);
+curl_setopt($ch, CURLOPT_URL, "https://tmi.twitch.tv/group/user/" . trim($_GET['channel']) . "/chatters");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $viewerInfo = curl_exec($ch);
