@@ -127,6 +127,8 @@ https://example.com/getglobalemotes.php
 
 https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
 
+https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&start_date=2023-02-15T00:00:00Z&end_date=2023-02-24T00:00:00Z
+
 https://example.com/getviewers.php?channel=MrCoolStreamer
 
 https://example.com/getgame.php?id=23123
