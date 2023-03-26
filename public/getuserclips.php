@@ -66,6 +66,14 @@ $userData = json_decode($userResponse, true);
 
 foreach ($userData['data'] as $data) {
 
+    //Get game details
+    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?id=" . trim($data['game_id']));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $userGameInfo = curl_exec($ch);
+
+    $gameData = json_decode($userGameInfo, true);
+
     // Use the thumbnail url to create the clip url
     $clip_url = explode("-preview-", $data['thumbnail_url']);
     $clip_url = $clip_url[0] . ".mp4";
@@ -83,6 +91,7 @@ foreach ($userData['data'] as $data) {
         "creator_name" => $data['creator_name'],
         "video_id" => $data['video_id'],
         "game_id" => $data['game_id'],
+        "game_name" => $gameData['data'][0]['name'],
         "language" => $data['language'],
         "title" => $data['title'],
         "view_count" => $data['view_count'],
@@ -131,6 +140,14 @@ if (!empty($random) && $random == "true") {
 
     foreach ($userData['data'] as $data) {
 
+        //Get game details
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?id=" . trim($data['game_id']));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $userGameInfo = curl_exec($ch);
+
+        $gameData = json_decode($userGameInfo, true);
+
         // Use the thumbnail url to create the clip url
         $clip_url = explode("-preview-", $data['thumbnail_url']);
         $clip_url = $clip_url[0] . ".mp4";
@@ -148,6 +165,7 @@ if (!empty($random) && $random == "true") {
             "creator_name" => $data['creator_name'],
             "video_id" => $data['video_id'],
             "game_id" => $data['game_id'],
+            "game_name" => $gameData['data'][0]['name'],
             "language" => $data['language'],
             "title" => $data['title'],
             "view_count" => $data['view_count'],
