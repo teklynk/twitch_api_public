@@ -3,3 +3,4 @@ config/.auth
 config/.client
 config/.secret
 config/.domain
+getusersubscriptions.php
