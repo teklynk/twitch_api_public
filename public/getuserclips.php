@@ -8,6 +8,7 @@ $random = trim($_GET['random']);
 $start_date = trim($_GET['start_date']);
 $end_date = trim($_GET['end_date']);
 $id = trim($_GET['id']);
+$creator_name = trim(strtolower($_GET['creator_name']));
 $itemCount = 0;
 
 $itemsArray = array();
@@ -72,26 +73,55 @@ foreach ($userData['data'] as $data) {
 
     $itemCount++;
 
-    $itemsArray[] = array(
-        "item" => $itemCount,
-        "id" => $data['id'],
-        "url" => $data['url'],
-        "embed_url" => $data['embed_url'],
-        "broadcaster_id" => $data['broadcaster_id'],
-        "broadcaster_name" => $data['broadcaster_name'],
-        "creator_id" => $data['creator_id'],
-        "creator_name" => $data['creator_name'],
-        "video_id" => $data['video_id'],
-        "game_id" => $data['game_id'],
-        "language" => $data['language'],
-        "title" => $data['title'],
-        "view_count" => $data['view_count'],
-        "created_at" => $data['created_at'],
-        "thumbnail_url" => $data['thumbnail_url'],
-        "duration" => $data['duration'],
-        "vod_offset" => $data['vod_offset'],
-        "clip_url" => $clip_url
-    );
+    // Only grab clips that were created by the streamer/creator
+    if (!empty($creator_name) && strtolower($data['creator_name']) == $creator_name) {
+
+        $itemsArray[] = array(
+            "item" => $itemCount,
+            "id" => $data['id'],
+            "url" => $data['url'],
+            "embed_url" => $data['embed_url'],
+            "broadcaster_id" => $data['broadcaster_id'],
+            "broadcaster_name" => $data['broadcaster_name'],
+            "creator_id" => $data['creator_id'],
+            "creator_name" => $data['creator_name'],
+            "video_id" => $data['video_id'],
+            "game_id" => $data['game_id'],
+            "language" => $data['language'],
+            "title" => $data['title'],
+            "view_count" => $data['view_count'],
+            "created_at" => $data['created_at'],
+            "thumbnail_url" => $data['thumbnail_url'],
+            "duration" => $data['duration'],
+            "vod_offset" => $data['vod_offset'],
+            "clip_url" => $clip_url
+        );
+
+    // grab all clips
+    } elseif (empty($creator_name)) {
+
+        $itemsArray[] = array(
+            "item" => $itemCount,
+            "id" => $data['id'],
+            "url" => $data['url'],
+            "embed_url" => $data['embed_url'],
+            "broadcaster_id" => $data['broadcaster_id'],
+            "broadcaster_name" => $data['broadcaster_name'],
+            "creator_id" => $data['creator_id'],
+            "creator_name" => $data['creator_name'],
+            "video_id" => $data['video_id'],
+            "game_id" => $data['game_id'],
+            "language" => $data['language'],
+            "title" => $data['title'],
+            "view_count" => $data['view_count'],
+            "created_at" => $data['created_at'],
+            "thumbnail_url" => $data['thumbnail_url'],
+            "duration" => $data['duration'],
+            "vod_offset" => $data['vod_offset'],
+            "clip_url" => $clip_url
+        );
+
+    }
 }
 
 $dataArray = array(
