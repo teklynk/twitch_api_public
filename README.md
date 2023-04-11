@@ -109,7 +109,7 @@ Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&r
 Example: https://example.com/getuserclips.php?id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 
 
-## Other Examples:
+## End points examples:
 
 https://example.com/getuserstatus.php?channel=MrCoolStreamer
 
@@ -127,7 +127,7 @@ https://example.com/getglobalemotes.php
 
 https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
 
-https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&start_date=2023-02-15T00:00:00Z&end_date=2023-02-24T00:00:00Z
+https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&start_date=2023-02-15T00:00:00Z&end_date=2023-02-24T00:00:00Z&creator_name=MrCoolStreamer
 
 https://example.com/getviewers.php?channel=MrCoolStreamer
 
