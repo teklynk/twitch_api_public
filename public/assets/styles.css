@@ -2,8 +2,6 @@
 
 html, body {
     font-family: Basic, Helvetica, sans-serif;
-    overflow: hidden;
-    background: transparent;
     padding: 0;
     margin: 0;
 }

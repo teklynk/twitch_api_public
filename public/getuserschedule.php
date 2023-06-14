@@ -67,6 +67,7 @@ if (!empty($ical) && $ical == "true") {
     echo "<html>";
     echo "<head>";
     echo "<meta charset='UTF-8'>";
+    echo "<meta http-equiv='refresh' content='300'>";
     echo "<link rel='stylesheet' href='/assets/styles.css'>";
     echo "</head>";
     echo "<body>";
