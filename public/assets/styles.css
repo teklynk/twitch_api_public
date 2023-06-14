@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Basic');
 
+@font-face {
+    font-family:"Modern DOS 9x16";
+    src: url("ModernDOS9x16.ttf") format("truetype");
+}
+
 html, body {
     font-family: Basic, Helvetica, sans-serif;
     padding: 0;
