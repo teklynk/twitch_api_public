@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Basic');
+
+html, body {
+    font-family: Basic, Helvetica, sans-serif;
+    overflow: hidden;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+#container {
+    display: block;
+}
+
+.event {
+    margin: 2em;
+}
+
+span.start_date, span.title {
+    display: block;
+    color: #000;
+    word-wrap: break-word;
+    letter-spacing: 1pt;
+}
+
+span.start_date {
+    font-weight: bold;
+    font-size: larger;
+}
+
+span.title {
+    font-size: normal;
+}

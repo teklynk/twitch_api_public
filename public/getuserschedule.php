@@ -2,6 +2,7 @@
 require_once(__DIR__ . '/../config/config.php');
 
 $ical = trim($_GET['ical']);
+$html = trim($_GET['html']);
 
 $ch = curl_init();
 
@@ -27,6 +28,56 @@ if (!empty($ical) && $ical == "true") {
     header('Content-type: text/calendar');
 
     echo $userIcalResponse;
+
+} elseif (!empty($html) && $html == "true") {
+
+    //Get user schedule as html
+    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $userHtmlResponse = curl_exec($ch);
+
+    $userHtmlResponse = json_decode($userHtmlResponse, true);
+
+    $userEventsArray = $userHtmlResponse['data']['segments'];
+
+    $htmlEventContents = "";
+
+    $cnt = 0;
+
+    foreach ($userEventsArray as $event) {
+
+        $cnt++;
+
+        $title = trim($event['title']);
+        $start = trim($event['start_time']);
+   
+        if (!empty($title)) {
+            $htmlEventContents .= "<div class='event item_" . $cnt . "'>";
+            $htmlEventContents .= "<span class='start_date'>" . $start . "</span>";
+            $htmlEventContents .= "<span class='title'>" . $title . "</span>";
+            $htmlEventContents .= "</div>";
+        }
+        
+    }
+
+    header('Content-type: text/html');
+
+    echo "<!DOCTYPE html>";
+    echo "<html>";
+    echo "<head>";
+    echo "<meta charset='UTF-8'>";
+    echo "<link rel='stylesheet' href='/assets/styles.css'>";
+    echo "</head>";
+    echo "<body>";
+    echo "<div id='container'>";
+
+    echo $htmlEventContents;
+
+    echo "</div>";
+    echo "<script src='/assets/functions.js'></script>";
+    echo "</body>";
+    echo "</html>";
 
 } else {
 
