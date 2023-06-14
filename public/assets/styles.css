@@ -11,21 +11,18 @@ html, body {
 }
 
 .event {
-    margin: 2em;
+    margin: 1rem;
 }
 
 span.start_date, span.title {
     display: block;
-    color: #000;
     word-wrap: break-word;
-    letter-spacing: 1pt;
 }
 
 span.start_date {
-    font-weight: bold;
-    font-size: larger;
+    
 }
 
 span.title {
-    font-size: normal;
+    
 }
