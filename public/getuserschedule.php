@@ -55,7 +55,7 @@ if (!empty($ical) && $ical == "true") {
         if (!empty($title)) {
             $htmlEventContents .= "<div class='event item_" . $cnt . "'>";
             $htmlEventContents .= "<span class='start_date'>" . $start . "</span>";
-            $htmlEventContents .= "<span class='title'>" . $title . "</span>";
+            $htmlEventContents .= "<span class='title'>" . $title . "</span><br>";
             $htmlEventContents .= "</div>";
         }
         

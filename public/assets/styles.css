@@ -15,6 +15,10 @@ html, body {
     display: block;
 }
 
+#container br {
+    display: none;
+}
+
 .event {
     margin: 1rem;
 }
