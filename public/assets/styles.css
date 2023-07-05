@@ -16,7 +16,7 @@ html, body {
 }
 
 .event {
-    margin: 1rem;
+    margin: 1rem 1rem 2rem 1rem;
 }
 
 span.start_date, span.title {

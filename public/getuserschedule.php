@@ -110,7 +110,7 @@ if (isset($_GET['channel'])) {
                 if (!empty($title)) {
                     $htmlEventContents .= "<div class='event item_" . $cnt . "'>";
                     $htmlEventContents .= "<span class='start_date'>" . $start . "</span>";
-                    $htmlEventContents .= "<span class='title'>" . $title . "</span><br>";
+                    $htmlEventContents .= "<span class='title'>" . $title . "</span>";
                     $htmlEventContents .= "</div>";
                 }
         
@@ -131,7 +131,7 @@ if (isset($_GET['channel'])) {
         echo "<html>";
         echo "<head>";
         echo "<meta charset='UTF-8'>";
-        echo "<link rel='stylesheet' href='/assets/styles.css'>";
+        echo "<link rel='stylesheet' href='/assets/styles.css?cachebust=oL8nT1pQ5qI7gC8r'>";
         echo "</head>";
         echo "<body>";
         echo "<div id='container'>";
@@ -139,7 +139,7 @@ if (isset($_GET['channel'])) {
         echo $htmlEventContents;
 
         echo "</div>";
-        echo "<script src='/assets/functions.js'></script>";
+        echo "<script src='/assets/functions.js?cachebust=oL8nT1pQ5qI7gC8r'></script>";
         echo "</body>";
         echo "</html>";
 
