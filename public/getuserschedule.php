@@ -1,9 +1,16 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$ical = trim($_GET['ical']);
-$html = trim($_GET['html']);
-$limit = trim($_GET['limit']);
+$ical = isset($_GET['ical']) ? $_GET['ical'] : 'empty';
+$html = isset($_GET['html']) ? $_GET['html'] : 'empty';
+$limit = isset($_GET['limit']) ? $_GET['limit'] : 'empty';
+$userHtmlResponseArray1 = array();
+$userHtmlResponseArray2 = array();
+$userHtmlResponseArray3 = array();
+$userHtmlResponseArray4 = array();
+$userHtmlResponseArray5 = array();
+$userEventsArray = array();
+$userHtmlResponse = array();
 
 if ($limit > 100) {
     $limit = 100;
@@ -22,9 +29,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $userInfo = curl_exec($ch);
 $userResult = json_decode($userInfo, true);
 
-if (!empty($ical) && $ical == "true") {
+if (isset($ical) && $ical == "true") {
 
-    //Get user ical data
+    // Get user ical data
     curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule/icalendar?broadcaster_id=" . $userResult['data'][0]['id']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -36,14 +43,14 @@ if (!empty($ical) && $ical == "true") {
 
 } elseif (!empty($html) && $html == "true") {
 
-    //Get user schedule as html
+    // Get user schedule as html
     curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $userHtmlResponse1 = curl_exec($ch);
     $userHtmlResponseArray1 = json_decode($userHtmlResponse1, true);
 
-    if ($userHtmlResponseArray1['pagination']['cursor'] > "") {
+    if (is_array($userHtmlResponseArray1['pagination'])) {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray1['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -52,7 +59,7 @@ if (!empty($ical) && $ical == "true") {
         $userHtmlResponseArray2 = json_decode($userHtmlResponse2, true);
     }
 
-    if ($userHtmlResponseArray2['pagination']['cursor'] > "") {
+    if (is_array($userHtmlResponseArray2['pagination'])) {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray2['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -61,7 +68,7 @@ if (!empty($ical) && $ical == "true") {
         $userHtmlResponseArray3 = json_decode($userHtmlResponse3, true);
     }
 
-    if ($userHtmlResponseArray3['pagination']['cursor'] > "") {
+    if (is_array($userHtmlResponseArray3['pagination'])) {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray3['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -70,7 +77,7 @@ if (!empty($ical) && $ical == "true") {
         $userHtmlResponseArray4 = json_decode($userHtmlResponse4, true);
     }
 
-    if ($userHtmlResponseArray4['pagination']['cursor'] > "") {
+    if (is_array($userHtmlResponseArray4['pagination'])) {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray4['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -80,13 +87,15 @@ if (!empty($ical) && $ical == "true") {
     }
 
     // merge all array data into one array
-    $userHtmlResponse = array_merge(
-        $userHtmlResponseArray1['data']['segments'], 
-        $userHtmlResponseArray2['data']['segments'], 
-        $userHtmlResponseArray3['data']['segments'], 
-        $userHtmlResponseArray4['data']['segments'],
-        $userHtmlResponseArray5['data']['segments']
-    );
+    if ($userHtmlResponseArray1["error"] != "Not Found") {
+        $userHtmlResponse = array_merge(
+            $userHtmlResponseArray1['data']['segments'], 
+            $userHtmlResponseArray2['data']['segments'], 
+            $userHtmlResponseArray3['data']['segments'], 
+            $userHtmlResponseArray4['data']['segments'],
+            $userHtmlResponseArray5['data']['segments']
+        );
+    }
 
     $userEventsArray = $userHtmlResponse;
 
@@ -94,26 +103,32 @@ if (!empty($ical) && $ical == "true") {
 
     $cnt = 0;
 
-    foreach ($userEventsArray as $event) {
+    if (is_array($userEventsArray) && count($userEventsArray) > 0) {
+        foreach ($userEventsArray as $event) {
 
-        $cnt++;
-
-        $title = trim($event['title']);
-        $start = trim($event['start_time']);
-   
-        if (!empty($title)) {
-            $htmlEventContents .= "<div class='event item_" . $cnt . "'>";
-            $htmlEventContents .= "<span class='start_date'>" . $start . "</span>";
-            $htmlEventContents .= "<span class='title'>" . $title . "</span><br>";
-            $htmlEventContents .= "</div>";
+            $cnt++;
+    
+            $title = trim($event['title']);
+            $start = trim($event['start_time']);
+       
+            if (!empty($title)) {
+                $htmlEventContents .= "<div class='event item_" . $cnt . "'>";
+                $htmlEventContents .= "<span class='start_date'>" . $start . "</span>";
+                $htmlEventContents .= "<span class='title'>" . $title . "</span><br>";
+                $htmlEventContents .= "</div>";
+            }
+    
+            if ($cnt == $limit) {
+                break;
+            }
+            
         }
-
-        if ($cnt == $limit) {
-            break;
-        }
-        
+    } else {
+        // exit - do nothing else
+        die();
     }
 
+    // print html page
     header('Content-type: text/html');
 
     echo "<!DOCTYPE html>";
@@ -134,7 +149,7 @@ if (!empty($ical) && $ical == "true") {
 
 } else {
 
-    //Get user schedule
+    // Get user schedule
     curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
