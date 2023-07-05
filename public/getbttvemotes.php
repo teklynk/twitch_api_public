@@ -48,10 +48,12 @@ if (isset($_GET['channel'])) {
         $combindArr = array_merge((array)$userData['channelEmotes'], (array)$userData['sharedEmotes'], (array)$globalData);
 
         foreach ($combindArr as $data) {
-            $ItemsArray[] = array(
-                "id" => $data['id'],
-                "code" => $data['code']
-            );
+            if ($data['code'] > "") {
+                $ItemsArray[] = array(
+                    "id" => $data['id'],
+                    "code" => $data['code']
+                );
+            }
         }
 
         header('Content-type: application/json');

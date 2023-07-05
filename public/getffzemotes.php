@@ -48,10 +48,12 @@ if (isset($_GET['channel'])) {
         );
 
         foreach ($combindArr as $data) {
-            $ItemsArray[] = array(
-                "id" => $data['id'],
-                "code" => $data['name']
-            );
+            if ($data['name'] > "") {
+                $ItemsArray[] = array(
+                    "id" => $data['id'],
+                    "code" => $data['name']
+                );
+            }
         }
 
         header('Content-type: application/json');

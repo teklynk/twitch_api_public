@@ -41,10 +41,12 @@ if (isset($_GET['channel'])) {
         $combindArr = array_merge((array)$userData, (array)$globalData);
 
         foreach ($combindArr as $data) {
-            $ItemsArray[] = array(
-                "id" => $data['id'],
-                "code" => $data['name']
-            );
+            if ($data['name'] > "") {
+                $ItemsArray[] = array(
+                    "id" => $data['id'],
+                    "code" => $data['name']
+                );
+            }
         }
 
         header('Content-type: application/json');
