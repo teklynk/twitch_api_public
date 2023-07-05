@@ -1,9 +1,9 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$ical = isset($_GET['ical']) ? $_GET['ical'] : 'empty';
-$html = isset($_GET['html']) ? $_GET['html'] : 'empty';
-$limit = isset($_GET['limit']) ? $_GET['limit'] : 'empty';
+$ical = isset($_GET['ical']) ? $_GET['ical'] : '';
+$html = isset($_GET['html']) ? $_GET['html'] : '';
+$limit = isset($_GET['limit']) ? $_GET['limit'] : '';
 $userHtmlResponseArray1['data']['segments'] = array();
 $userHtmlResponseArray2['data']['segments'] = array();
 $userHtmlResponseArray3['data']['segments'] = array();

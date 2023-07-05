@@ -1,14 +1,14 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$limit = trim($_GET['limit']);
-$after = trim($_GET['after']);
-$before = trim($_GET['before']);
-$random = trim($_GET['random']);
-$start_date = trim($_GET['start_date']);
-$end_date = trim($_GET['end_date']);
-$id = trim($_GET['id']);
-$creator_name = trim(strtolower($_GET['creator_name']));
+$limit = isset($_GET['limit']) ? $_GET['limit'] : '';
+$after = isset($_GET['after']) ? $_GET['after'] : '';
+$before = isset($_GET['before']) ? $_GET['before'] : '';
+$random = isset($_GET['random']) ? $_GET['random'] : '';
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+$creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_name'])) : '';
 $itemCount = 0;
 
 $itemsArray = array();

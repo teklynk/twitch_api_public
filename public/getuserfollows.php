@@ -1,9 +1,9 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$limit = trim($_GET['limit']);
-$after = trim($_GET['after']);
-$before = trim($_GET['before']);
+$limit = isset($_GET['limit']) ? $_GET['limit'] : '';
+$after = isset($_GET['after']) ? $_GET['after'] : '';
+$before = isset($_GET['before']) ? $_GET['before'] : '';
 
 if (!empty($after)) {
     $afterVar = "&after=" . $after;
