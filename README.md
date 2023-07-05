@@ -137,6 +137,8 @@ https://example.com/getuserschedule.php?channel=MrCoolStreamer
 
 https://example.com/getuserschedule.php?channel=MrCoolStreamer&ical=true - returns .ics download file that can imported into a calendar client.
 
+https://example.com/getuserschedule.php?channel=MrCoolStreamer&html=true&format=0&limit=30 - returns html view (format=1 is an alternate date/time format). Event dates and times have been converted to your local time zone. This could be used as a OBS browser source or embedded as an iframe on a website.
+
 https://example.com/getbttvemotes.php?channel=MrCoolStreamer
 
 jQuery Ajax Example:
