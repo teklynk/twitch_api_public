@@ -41,10 +41,10 @@ if (isset($_GET['channel'])) {
 
         //combine all frankerfacez emotes into one array
         $combindArr = array_merge(
-            $userData['sets'][$userRoomSetId]['emoticons'],
-            $globalData['sets']['3']['emoticons'],
-            $globalData['sets']['1532818']['emoticons'],
-            $globalData['sets']['1539687']['emoticons']
+            (array)$userData['sets'][$userRoomSetId]['emoticons'],
+            (array)$globalData['sets']['3']['emoticons'],
+            (array)$globalData['sets']['1532818']['emoticons'],
+            (array)$globalData['sets']['1539687']['emoticons']
         );
 
         foreach ($combindArr as $data) {

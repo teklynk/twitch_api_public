@@ -22,39 +22,42 @@ if (isset($_GET['channel'])) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $userInfo = curl_exec($ch);
+    $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $userResult = json_decode($userInfo, true);
 
-    //Get user bttv emotes
-    curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/users/twitch/" . $userResult['data'][0]['id']);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
-    $userResponse = curl_exec($ch);
+    if ($userStatus == 200 && count($userResult['data']) > 0) {
+        //Get user bttv emotes
+        curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/users/twitch/" . $userResult['data'][0]['id']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
+        $userResponse = curl_exec($ch);
 
-    //Get global bttv emotes
-    curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/emotes/global");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
-    $globalResponse = curl_exec($ch);
+        //Get global bttv emotes
+        curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/emotes/global");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
+        $globalResponse = curl_exec($ch);
 
-    //user bttvemotes data
-    $userData = json_decode($userResponse, true);
+        //user bttvemotes data
+        $userData = json_decode($userResponse, true);
 
-    //global bttvemotes data
-    $globalData = json_decode($globalResponse, true);
+        //global bttvemotes data
+        $globalData = json_decode($globalResponse, true);
 
-    //combine all bttvemotes into one array
-    $combindArr = array_merge($userData['channelEmotes'], $userData['sharedEmotes'], $globalData);
+        //combine all bttvemotes into one array
+        $combindArr = array_merge((array)$userData['channelEmotes'], (array)$userData['sharedEmotes'], (array)$globalData);
 
-    foreach ($combindArr as $data) {
-        $ItemsArray[] = array(
-            "id" => $data['id'],
-            "code" => $data['code']
-        );
+        foreach ($combindArr as $data) {
+            $ItemsArray[] = array(
+                "id" => $data['id'],
+                "code" => $data['code']
+            );
+        }
+
+        header('Content-type: application/json');
+
+        echo json_encode($ItemsArray);
     }
-
-    header('Content-type: application/json');
-
-    echo json_encode($ItemsArray);
 
     curl_close($ch);
 }

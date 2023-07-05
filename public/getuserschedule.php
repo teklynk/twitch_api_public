@@ -4,11 +4,6 @@ require_once(__DIR__ . '/../config/config.php');
 $ical = isset($_GET['ical']) ? $_GET['ical'] : '';
 $html = isset($_GET['html']) ? $_GET['html'] : '';
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
-$userHtmlResponseArray1['data']['segments'] = array();
-$userHtmlResponseArray2['data']['segments'] = array();
-$userHtmlResponseArray3['data']['segments'] = array();
-$userHtmlResponseArray4['data']['segments'] = array();
-$userHtmlResponseArray5['data']['segments'] = array();
 $userEventsArray = array();
 $userHtmlResponse = array();
 
@@ -91,11 +86,11 @@ if (isset($_GET['channel'])) {
 
         // merge all array data into one array
         $userHtmlResponse = array_merge(
-            $userHtmlResponseArray1['data']['segments'], 
-            $userHtmlResponseArray2['data']['segments'], 
-            $userHtmlResponseArray3['data']['segments'], 
-            $userHtmlResponseArray4['data']['segments'],
-            $userHtmlResponseArray5['data']['segments']
+            (array)$userHtmlResponseArray1['data']['segments'], 
+            (array)$userHtmlResponseArray2['data']['segments'], 
+            (array)$userHtmlResponseArray3['data']['segments'], 
+            (array)$userHtmlResponseArray4['data']['segments'],
+            (array)$userHtmlResponseArray5['data']['segments']
         );
         
         $userEventsArray = $userHtmlResponse;
