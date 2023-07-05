@@ -1,12 +1,12 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$ch = curl_init();
-
 $headers = [
     'Authorization: Bearer ' . AUTH_TOKEN,
     'Client-Id: ' . CLIENT_ID
 ];
+
+$ch = curl_init();
 
 //Get user status
 curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/chat/emotes/global");
