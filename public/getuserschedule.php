@@ -4,11 +4,11 @@ require_once(__DIR__ . '/../config/config.php');
 $ical = isset($_GET['ical']) ? $_GET['ical'] : 'empty';
 $html = isset($_GET['html']) ? $_GET['html'] : 'empty';
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 'empty';
-$userHtmlResponseArray1 = array();
-$userHtmlResponseArray2 = array();
-$userHtmlResponseArray3 = array();
-$userHtmlResponseArray4 = array();
-$userHtmlResponseArray5 = array();
+$userHtmlResponseArray1['data']['segments'] = array();
+$userHtmlResponseArray2['data']['segments'] = array();
+$userHtmlResponseArray3['data']['segments'] = array();
+$userHtmlResponseArray4['data']['segments'] = array();
+$userHtmlResponseArray5['data']['segments'] = array();
 $userEventsArray = array();
 $userHtmlResponse = array();
 
@@ -41,7 +41,7 @@ if (isset($ical) && $ical == "true") {
 
     echo $userIcalResponse;
 
-} elseif (!empty($html) && $html == "true") {
+} elseif (isset($html) && $html == "true") {
 
     // Get user schedule as html
     curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id']);
@@ -50,7 +50,7 @@ if (isset($ical) && $ical == "true") {
     $userHtmlResponse1 = curl_exec($ch);
     $userHtmlResponseArray1 = json_decode($userHtmlResponse1, true);
 
-    if (is_array($userHtmlResponseArray1['pagination'])) {
+    if (is_array($userHtmlResponseArray1['pagination']) && count($userHtmlResponseArray1['data']['segments']) > 0 && $userHtmlResponseArray1['pagination']['cursor'] > "") {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray1['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -59,7 +59,7 @@ if (isset($ical) && $ical == "true") {
         $userHtmlResponseArray2 = json_decode($userHtmlResponse2, true);
     }
 
-    if (is_array($userHtmlResponseArray2['pagination'])) {
+    if (is_array($userHtmlResponseArray2['pagination']) && count($userHtmlResponseArray2['data']['segments']) > 0 && $userHtmlResponseArray2['pagination']['cursor'] > "") {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray2['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -68,7 +68,7 @@ if (isset($ical) && $ical == "true") {
         $userHtmlResponseArray3 = json_decode($userHtmlResponse3, true);
     }
 
-    if (is_array($userHtmlResponseArray3['pagination'])) {
+    if (is_array($userHtmlResponseArray3['pagination']) && count($userHtmlResponseArray3['data']['segments']) > 0 && $userHtmlResponseArray3['pagination']['cursor'] > "") {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray3['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -77,7 +77,7 @@ if (isset($ical) && $ical == "true") {
         $userHtmlResponseArray4 = json_decode($userHtmlResponse4, true);
     }
 
-    if (is_array($userHtmlResponseArray4['pagination'])) {
+    if (is_array($userHtmlResponseArray4['pagination']) && count($userHtmlResponseArray4['data']['segments']) > 0 && $userHtmlResponseArray4['pagination']['cursor'] > "") {
         // Gets the next 20 items from schedule
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id'] . "&after=" . $userHtmlResponseArray4['pagination']['cursor']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
