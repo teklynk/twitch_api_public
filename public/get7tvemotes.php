@@ -20,7 +20,7 @@ if (isset($_GET['channel'])) {
     $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $userResult = json_decode($userInfo, true);
 
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
+    if ($userStatus == 200) {
         //Get user 7tv emotes
         curl_setopt($ch, CURLOPT_URL, "https://api.7tv.app/v2/users/" . $userResult['data'][0]['id'] . "/emotes");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

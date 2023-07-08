@@ -17,7 +17,7 @@ if (isset($_GET['channel'])) {
     $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $userResult = json_decode($userInfo, true);
 
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
+    if ($userStatus == 200) {
         //Get user status
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/channels?broadcaster_id=" . $userResult['data'][0]['id']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

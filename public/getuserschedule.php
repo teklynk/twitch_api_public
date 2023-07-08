@@ -27,7 +27,7 @@ if (isset($_GET['channel'])) {
     $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $userResult = json_decode($userInfo, true);
 
-    if (isset($ical) && $ical == "true" && $userStatus == 200 && count($userResult['data']) > 0) {
+    if (isset($ical) && $ical == "true" && $userStatus == 200 ) {
 
         // Get user ical data
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule/icalendar?broadcaster_id=" . $userResult['data'][0]['id']);
@@ -39,7 +39,7 @@ if (isset($_GET['channel'])) {
 
         echo $userIcalResponse;
 
-    } elseif (isset($html) && $html == "true" && $userStatus == 200 && count($userResult['data']) > 0) {
+    } elseif (isset($html) && $html == "true" && $userStatus == 200) {
 
         // Get user schedule as html
         curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $userResult['data'][0]['id']);
