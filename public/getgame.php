@@ -20,5 +20,18 @@ if (isset($_GET['id'])) {
     echo $userInfo;
 
     curl_close($ch);
+
+} else {
+        
+    // return and empty data array/object
+    $userResponse = array(
+        "data" => []
+    );
+
+    $userResponse = json_encode($userResponse, true);
+
+    header('Content-type: application/json');
+
+    echo $userResponse;
 }
 ?>
