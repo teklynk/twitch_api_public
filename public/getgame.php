@@ -6,11 +6,16 @@ $headers = [
     'Client-Id: ' . CLIENT_ID
 ];
 
-if (isset($_GET['id'])) {
+if (isset($_GET['id']) || isset($_GET['name'])) {
 
     $ch = curl_init();
     
-    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?id=" . trim($_GET['id']));
+    if (!empty($_GET['id'])) {
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?id=" . trim($_GET['id'])); 
+    } elseif (!empty($_GET['name'])) {
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?name=" . trim(rawurlencode($_GET['name'])));
+    }
+    
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $userInfo = curl_exec($ch);
