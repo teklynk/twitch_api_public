@@ -4,6 +4,8 @@ require_once(__DIR__ . '/../config/config.php');
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
 $after = isset($_GET['after']) ? $_GET['after'] : '';
 $before = isset($_GET['before']) ? $_GET['before'] : '';
+$ref = isset($_GET['ref']) ? $_GET['ref'] : ''; //needs to be base64 encoded
+$clientId = isset($_GET['clientId']) ? $_GET['clientId'] : ''; //needs to be base64 encoded
 
 if (!empty($after)) {
     $afterVar = "&after=" . $after;
@@ -24,8 +26,8 @@ if ($limit > 100 ) {
 }
 
 $headers = [
-    'Authorization: Bearer ' . AUTH_TOKEN,
-    'Client-Id: ' . CLIENT_ID
+    'Authorization: Bearer ' . base64_decode($ref),
+    'Client-Id: ' . base64_decode($clientId)
 ];
 
 if (isset($_GET['channel'])) {
@@ -41,7 +43,7 @@ if (isset($_GET['channel'])) {
 
     if ($userStatus == 200 && count($userResult['data']) > 0) {
         //Get user followers
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users/follows?first=" . trim(strtolower($limit)) . "&to_id=" . $userResult['data'][0]['id'] . $afterVar . $beforeVar);
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/channels/followers?first=" . trim(strtolower($limit)) . "&broadcaster_id=" . $userResult['data'][0]['id'] . $afterVar);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $userResponse = curl_exec($ch);
