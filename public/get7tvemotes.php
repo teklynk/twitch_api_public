@@ -29,8 +29,6 @@ if (isset($_GET['channel'])) {
         //user 7tvemotes data
         $userData = json_decode($userResponse, true);
 
-        //var_dump($userData['emote_set']['emotes']);
-
         foreach ($userData['emote_set']['emotes'] as $data) {
             if ($data > "") {
 
