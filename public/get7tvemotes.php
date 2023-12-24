@@ -29,8 +29,19 @@ if (isset($_GET['channel'])) {
         //user 7tvemotes data
         $userData = json_decode($userResponse, true);
 
-        foreach ($userData['emote_set']['emotes'] as $data) {
-            if ($data > "") {
+        //Get global 7tv emotes
+        curl_setopt($ch, CURLOPT_URL, "https://7tv.io/v3/emote-sets/62cdd34e72a832540de95857");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $globalResponse = curl_exec($ch);
+
+        //global 7tvemotes data
+        $globalData = json_decode($globalResponse, true);
+
+        //combine all 7tvemotes into one array
+        $combindArr = array_merge((array)$userData['emote_set']['emotes'], (array)$globalData['emotes']);
+
+        foreach ($combindArr as $data) {
+            if ($data['name'] > "") {
 
                 $ItemsArray[] = array(
                     "id" => $data['id'],
