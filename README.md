@@ -150,6 +150,8 @@ https://example.com/getuserschedule.php?channel=MrCoolStreamer&html=true&format=
 
 https://example.com/getbttvemotes.php?channel=MrCoolStreamer
 
+**Most endpoints can use 'id' instead of 'channel'. Examples: https://example.com/getuserinfo.php?id=55184769, https://example.com/getuserstatus.php?id=55184769, https://example.com/getuserschedule.php?id=55184769**
+
 jQuery Ajax Example:
 
 ```javascript

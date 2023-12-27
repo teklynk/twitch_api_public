@@ -16,11 +16,16 @@ $headers = [
     'Client-Id: ' . CLIENT_ID
 ];
 
-if (isset($_GET['channel'])) {
+if (isset($_GET['channel']) || isset($_GET['id'])) {
 
     $ch = curl_init();
 
-    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
+    //Get user id and info
+    if (isset($_GET['channel'])) {
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
+    } elseif (isset($_GET['id'])) {
+        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']));
+    }
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $userInfo = curl_exec($ch);
