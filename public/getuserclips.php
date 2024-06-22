@@ -8,6 +8,7 @@ $random = isset($_GET['random']) ? $_GET['random'] : '';
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
+$prefer_featured = isset($_GET['prefer_featured']) ? $_GET['prefer_featured'] : '';
 $creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_name'])) : '';
 $itemCount = 0;
 
@@ -71,19 +72,41 @@ if (isset($_GET['channel'])) {
         if ($userStatus == 200) {
             //all clips data
             $userData = json_decode($userResponse, true);
+			
+			foreach ($userData['data'] as $data) {
 
-            foreach ($userData['data'] as $data) {
+				$inc_data = false;
+				
+				// Filter for creator_name and prefer_featured
+				if (!empty($creator_name) && strtolower($data['creator_name']) == $creator_name) {
+					// &creator_name set and this clip creator by that user
+					if (!empty($prefer_featured) && $prefer_featured == "true") {
+						// &prefer_featured=true
+						$inc_data = $data['is_featured'] == "true";
+					} else {
+						// &prefer_featured not set
+						$inc_data = true;
+					}
+				} elseif (empty($creator_name)) {
+					// &creator_name not set
+					if (!empty($prefer_featured) && $prefer_featured == "true") {
+						// &prefer_featured=true
+						$inc_data = $data['is_featured'] == "true";
+					} else {
+						// &prefer_featured not set
+						$inc_data = true;
+					}
+				}
 
-                // Use the thumbnail url to create the clip url
-                $clip_url = explode("-preview-", $data['thumbnail_url']);
-                $clip_url = $clip_url[0] . ".mp4";
+				if ($inc_data) {
 
-                $itemCount++;
+					// Use the thumbnail url to create the clip url
+					$clip_url = explode("-preview-", $data['thumbnail_url']);
+					$clip_url = $clip_url[0] . ".mp4";
 
-                // Only grab clips that were created by the streamer/creator
-                if (!empty($creator_name) && strtolower($data['creator_name']) == $creator_name) {
-
-                    $itemsArray[] = array(
+					$itemCount++;
+					
+					$itemsArray[] = array(
                         "item" => $itemCount,
                         "id" => $data['id'],
                         "url" => $data['url'],
@@ -101,41 +124,17 @@ if (isset($_GET['channel'])) {
                         "thumbnail_url" => $data['thumbnail_url'],
                         "duration" => $data['duration'],
                         "vod_offset" => $data['vod_offset'],
+                        "is_featured" => $data['is_featured'],
                         "clip_url" => $clip_url
                     );
-
-                // grab all clips
-                } elseif (empty($creator_name)) {
-
-                    $itemsArray[] = array(
-                        "item" => $itemCount,
-                        "id" => $data['id'],
-                        "url" => $data['url'],
-                        "embed_url" => $data['embed_url'],
-                        "broadcaster_id" => $data['broadcaster_id'],
-                        "broadcaster_name" => $data['broadcaster_name'],
-                        "creator_id" => $data['creator_id'],
-                        "creator_name" => $data['creator_name'],
-                        "video_id" => $data['video_id'],
-                        "game_id" => $data['game_id'],
-                        "language" => $data['language'],
-                        "title" => $data['title'],
-                        "view_count" => $data['view_count'],
-                        "created_at" => $data['created_at'],
-                        "thumbnail_url" => $data['thumbnail_url'],
-                        "duration" => $data['duration'],
-                        "vod_offset" => $data['vod_offset'],
-                        "clip_url" => $clip_url
-                    );
-
-                }
+				}
             }
-
-            $dataArray = array(
+			
+			$dataArray = array(
                 "data" => $itemsArray
             );
 
-            // Pull a single random clip   IE: &random=true
+			// Pull a single random clip   IE: &random=true
             if (!empty($random) && $random == "true") {
 
                 $array_item = array();
@@ -218,6 +217,7 @@ if (!empty($id)) {
                 "thumbnail_url" => $data['thumbnail_url'],
                 "duration" => $data['duration'],
                 "vod_offset" => $data['vod_offset'],
+                "is_featured" => $data['is_featured'],
                 "clip_url" => $clip_url
             );
         }
