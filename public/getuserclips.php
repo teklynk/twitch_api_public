@@ -75,6 +75,10 @@ if (isset($_GET['channel'])) {
 			
 			foreach ($userData['data'] as $data) {
 
+                if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                    continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+                }
+
 				$inc_data = false;
 				
 				// Filter for creator_name and prefer_featured
@@ -192,6 +196,10 @@ if (!empty($id)) {
         $userData = json_decode($userResponse, true);
 
         foreach ($userData['data'] as $data) {
+
+            if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+            }
 
             // Use the thumbnail url to create the clip url
             $clip_url = explode("-preview-", $data['thumbnail_url']);
