@@ -36,4 +36,10 @@ $authtoken = file_get_contents($authFile);
 
 define('AUTH_TOKEN', trim($authtoken));
 
+define('TWITCH_GRAPHQL_URL', 'https://gql.twitch.tv/gql');
+
+define('TWITCH_CLIENT_ID', 'kimne78kx3ncx6brgo4mv6wki5h1ko');
+
+define('TWITCH_SHA256HASH', '6fd3af2b22989506269b9ac02dd87eb4a6688392d67d94e41a6886f1e9f5c00f');
+
 ?>
