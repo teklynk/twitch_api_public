@@ -30,7 +30,7 @@ if (isset($_GET['channel'])) {
         $userData = json_decode($userResponse, true);
 
         //Get global 7tv emotes
-        curl_setopt($ch, CURLOPT_URL, "https://7tv.io/v3/emote-sets/62cdd34e72a832540de95857");
+        curl_setopt($ch, CURLOPT_URL, "https://7tv.io/v3/emote-sets/6353512c802a0e34bac96dd2");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $globalResponse = curl_exec($ch);
 

@@ -78,5 +78,4 @@ if (isset($_GET['channel'])) {
 
 }
 
-exit();
 ?>
