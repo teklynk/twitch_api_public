@@ -121,7 +121,7 @@ if (isset($_GET['channel'])) {
                         $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
                         $clips_token = $clips_array[0]['data']['clip']['playbackAccessToken']['value'];
                         $clips_token = urlencode($clips_token);
-                        $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][1]['sourceURL'];
+                        $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
                         $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
                     
@@ -242,7 +242,7 @@ if (!empty($id)) {
                 $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
                 $clips_token = $clips_array[0]['data']['clip']['playbackAccessToken']['value'];
                 $clips_token = urlencode($clips_token);
-                $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][1]['sourceURL'];
+                $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
                 $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
             
