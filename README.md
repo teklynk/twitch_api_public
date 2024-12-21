@@ -13,14 +13,14 @@ If you want to use a Docker container, I recommend https://hub.docker.com/r/traf
 
 If running this on a public server, I recommend using [Cloudflare](https://www.cloudflare.com/) for its Proxy, DDoS, Firewall and Rate-Limiting features.
 
-## NEW (Jun 2024)
+## NEW (June 2024)
 Getuserclips.php can now be filtered by "is_featured". This will show clips that the channel has set as Fetured.
 
 https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
 
 ## NEW (September 2023)
 
-Follows and Following endpoint now require a user access token and client ID that includes the user:read:follows and/or moderator:read:followers scope. This can be generated from [twitchtokengenerator.com](https://twitchtokengenerator.com//). The access token and client ID can then be used in the endpoint url: https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accessTokenXyz123Abc&clientId=abc123xyz5678 
+Follows and Following endpoint now require a user access token and client ID that includes the user:read:follows and/or moderator:read:followers scope. This can be generated from [twitchtokengenerator.com](https://twitchtokengenerator.com/). The access token and client ID can then be used in the endpoint url: https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accessTokenXyz123Abc&clientId=abc123xyz5678 
 
 The access token and client ID values need to be base_64 encoded.
 - javascript: btoa(stringToEncode);
@@ -34,9 +34,6 @@ server {
     server_name    example.com;
     root           /var/www/html/twitch_api_public/public;
     index          index.php;
-
-    access_log off;
-    error_log off;
 
     add_header Access-Control-Allow-Origin *;
 
@@ -86,6 +83,7 @@ server {
 
    ErrorLog ${APACHE_LOG_DIR}/error.log
    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
    <Directory "/var/www/html/twitch_api_public/public">
         Options Indexes FollowSymLinks MultiViews
         AllowOverride All
