@@ -4,6 +4,12 @@ This is a way to run your own Twitch API "gate-way" service that only requires t
 
 ## Requirements
 
+### Docker
+
+This project now includes a Dockerfile and docker-compose.yml for running this locally on your machine or on a remote server. `sudo docker-compose up --build`. 
+
+### Linux Server
+
 Linux server running nginx, php, php-fpm, curl. No Database needed.
 
 Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
@@ -106,11 +112,7 @@ server {
 
 ## Instructions and Notes
 
-- **Rename** config/sample.auth to .auth
-
-- **Rename** config/sample.client to .client
-
-- **Rename** config/sample.secret to .secret
+- **Rename** sample.env to .env
 
 - Visit https://dev.twitch.tv/ to register your application. 
 - On the dev.twitch.tv site, click "Your Console" in the upper right. Under "Applications" click "Register Your Application". 
@@ -118,9 +120,7 @@ server {
 - OAuth Redirect URLs. When testing locally, you can set this to http://localhost. I like to add localhost and my public domain name entry. This will allow your domain(s) access to the Twitch API. (These domains with this OAuth token and client ID are allowed to access the Twitch API)
 - Select Category > Chat Bot.
 
-- Add your Twitch client ID to the .client file.
-
-- Add your Twitch secret to the .secret file.
+- Add your Twitch client ID and Twitch secret to the .env file.
 
 These files are needed to generate your Twitch oAuth token.
 
@@ -137,12 +137,13 @@ You can get the cursor value from the first request.
   "cursor": "eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0"
 }
 ```
-Example: https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0
+Example: 
+https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0
 will pull the next 100 follows.
 
-*Pull a single Random clip with: &random=true
+*Pull a single Random clip with: `&random=true`. Set the `count=3` value to limit how many random clips are returned. If not set, then only 1 random clip is returned.
 
-Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true
+Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true&count=3
 
 *Pull a single clip by its ID: id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 

@@ -1,34 +1,121 @@
 <?php
+error_reporting(E_ALL & ~E_WARNING);
+
+ini_set('display_errors', 0);
+
+define('logsPath', __DIR__ . "/../logs");
+
 $authFile = __DIR__ . '/.auth';
 
 $authFileModDate = date('Y-m-d', filemtime($authFile));
 $date_now = date('Y-m-d');
 $authtoken = '';
 
-// Note: The files are hidden from the file system
-define('CLIENT_ID', trim(file_get_contents(__DIR__ . '/.client')));
-define('CLIENT_SECRET', trim(file_get_contents(__DIR__ . '/.secret')));
+require_once(__DIR__ . '/../vendor/autoload.php');
+
+// Instantiate DotEnv
+$dotenv = new Dotenv\Dotenv(__DIR__ . '/../', '.env');
+$dotenv->load();
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+use GuzzleHttp\Client;
+
+//Instantiate MonoLog as $logger
+$logger = new Logger('Monolog');
+try {
+    $logger->pushHandler(new StreamHandler(logsPath . "/monolog.log", Logger::NOTICE));
+} catch (Exception $e) {
+}
+//Example usage
+// Monolog - create a log channel
+//$logger = new Logger('Monolog');
+//$logger->pushHandler(new StreamHandler(logsPath . 'monolog2.log', Logger::NOTICE));
+
+// Use it like this in your code:
+//$logger->warning('Foo');
+//$logger->error('Bar');
+//$logger->notice('Test');
+//$logger->notice('FAILED Login - ' . $user_name . ' - ' . getRealIpAddr());
+
+//Gets clients real IP address - for logging and IP restriction
+function getRealIpAddr()
+{
+    global $clientip;
+    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $clientip = filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP);
+    } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        $clientip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $clientip = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP);
+    } elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $clientip = filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP);
+    } elseif (filter_var($clientip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var($clientip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $clientip = "Client IP Not Found";
+    }
+
+    return $clientip;
+}
+
+// If using an IP allow list, check for it
+$apiIPAllow = getenv('API_IP_ALLOW') > '' ? true : false;
+
+if ($apiIPAllow) {
+    $ip = getRealIpAddr();
+    $allowedIPs = explode(',', getenv('API_IP_ALLOW'));
+
+    if (!in_array($ip, $allowedIPs)) {
+        header('Content-type: application/json');
+        echo json_encode(['error' => 'Invalid IP Address']);
+        exit();
+    }
+}
+
+// If using an API key, check for it. Make sure X-Api-Key is set in the request headers
+$apiKey = getenv('API_KEY') > '' ? true : false;
+
+if ($apiKey) {
+    $http_headers = getallheaders();
+
+    if (!isset($http_headers['X-Api-Key']) || $http_headers['X-Api-Key'] != $apiKey) {
+        header('Content-type: application/json');
+        echo json_encode(['error' => 'Invalid or missing API Key']);
+        exit();
+    }
+}
 
 // Refresh oAuth Token automatically
 if (strtotime($date_now) > strtotime($authFileModDate) || file_get_contents($authFile) == '') {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://id.twitch.tv/oauth2/token?client_id=" . CLIENT_ID . "&client_secret=" . CLIENT_SECRET . "&grant_type=client_credentials");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $Response = curl_exec($ch);
-    $Result = json_decode($Response, true);
+    $client = new Client();
+    $url = "https://id.twitch.tv/oauth2/token";
+    $params = [
+        'client_id' => getenv('API_TWITCH_CLIENT_ID'),
+        'client_secret' => getenv('API_TWITCH_SECRET'),
+        'grant_type' => 'client_credentials'
+    ];
 
-    curl_close($ch);
+    try {
+        $response = $client->request('POST', $url, [
+            'form_params' => $params,
+            'http_errors' => false
+        ]);
 
-    if ($Result['status'] != 403) {
-        $writeauthtoken = $Result['access_token'];
-    } else {
-        $writeauthtoken = '';
-    }
+        $result = json_decode($response->getBody(), true);
 
-    if ($writeauthtoken > '') {
-        // Write auth token to .auth file
-        file_put_contents($authFile, $writeauthtoken);
+        if ($response->getStatusCode() != 403) {
+            $writeauthtoken = $result['access_token'];
+        } else {
+            $writeauthtoken = '';
+        }
+
+        if ($writeauthtoken > '') {
+            // Write auth token to .auth file
+            file_put_contents($authFile, $writeauthtoken);
+        }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        // Handle request errors
+        error_log('Request failed: ' . $e->getMessage());
     }
 }
 
@@ -36,10 +123,7 @@ $authtoken = file_get_contents($authFile);
 
 define('AUTH_TOKEN', trim($authtoken));
 
+// Only change these if you know what you're doing
 define('TWITCH_GRAPHQL_URL', 'https://gql.twitch.tv/gql');
-
 define('TWITCH_CLIENT_ID', 'kimne78kx3ncx6brgo4mv6wki5h1ko');
-
 define('TWITCH_SHA256HASH', '6fd3af2b22989506269b9ac02dd87eb4a6688392d67d94e41a6886f1e9f5c00f');
-
-?>

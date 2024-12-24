@@ -1,13 +1,20 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
+use GuzzleHttp\Client;
+
+$client = new Client();
+
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
 $after = isset($_GET['after']) ? $_GET['after'] : '';
 $before = isset($_GET['before']) ? $_GET['before'] : '';
 $ref = isset($_GET['ref']) ? $_GET['ref'] : ''; //needs to be base64 encoded
 $clientId = isset($_GET['clientId']) ? $_GET['clientId'] : ''; //needs to be base64 encoded
 
-//var_dump(base64_decode($clientId));
+$headers = [
+    'Authorization' => 'Bearer ' . base64_decode($ref),
+    'Client-Id' => base64_decode($clientId)
+];
 
 if (!empty($after)) {
     $afterVar = "&after=" . $after;
@@ -23,58 +30,44 @@ if (!empty($before)) {
     $beforeVar = "";
 }
 
-if ($limit > 100 ) {
+if ($limit > 100) {
     $limit = 100;
 }
 
-$headers = [
-    'Authorization: Bearer ' . base64_decode($ref),
-    'Client-Id: ' . base64_decode($clientId)
-];
-
 if (isset($_GET['channel']) || isset($_GET['id'])) {
 
-    $ch = curl_init();
+    try {
+        // Get user id and info
+        if (isset($_GET['channel'])) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        } elseif (isset($_GET['id'])) {
+            $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
+        }
 
-    //Get user id and info
-    if (isset($_GET['channel'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
-    } elseif (isset($_GET['id'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']));
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $userInfo = curl_exec($ch);
-    $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $userResult = json_decode($userInfo, true);
+        $response = $client->request('GET', $url, [
+            'headers' => $headers
+        ]);
 
-    //var_dump($userInfo);
+        $userInfo = json_decode($response->getBody(), true);
+        $userStatus = $response->getStatusCode();
 
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
-        //Get user followers
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/channels/followed?user_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $afterVar);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $userResponse = curl_exec($ch);
+        if ($userStatus == 200 && count($userInfo['data']) > 0) {
+            // Get user followers
+            $url = "https://api.twitch.tv/helix/channels/followed?user_id=" . $userInfo['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $afterVar;
+            $response = $client->request('GET', $url, [
+                'headers' => $headers
+            ]);
 
+            header('Content-type: application/json');
+            echo $response->getBody();
+        } else {
+            // Return an empty data array/object
+            $userResponse = ["data" => []];
+            header('Content-type: application/json');
+            echo json_encode($userResponse, true);
+        }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
         header('Content-type: application/json');
-
-        echo $userResponse;
-
-    } else {
-        
-        // return and empty data array/object
-        $userResponse = array(
-            "data" => []
-        );
-
-        $userResponse = json_encode($userResponse, true);
-
-        header('Content-type: application/json');
-
-        echo $userResponse;
+        echo json_encode(['error' => $e->getMessage()]);
     }
-
-    curl_close($ch);
 }
-?>

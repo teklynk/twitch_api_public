@@ -1,65 +1,77 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
+use GuzzleHttp\Client;
+
+$client = new Client();
+
 $headers = [
-    'Authorization: Bearer ' . AUTH_TOKEN,
-    'Client-Id: ' . CLIENT_ID
+    'Authorization' => 'Bearer ' . AUTH_TOKEN,
+    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
 if (isset($_GET['channel']) || isset($_GET['id'])) {
 
-    $ch = curl_init();
+    try {
+        // Determine the API endpoint for the user info
+        if (isset($_GET['channel'])) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        } elseif (isset($_GET['id'])) {
+            $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
+        } else {
+            throw new Exception("Invalid parameters. Provide either 'channel' or 'id'.");
+        }
 
-    //Get user id and info
-    if (isset($_GET['channel'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
-    } elseif (isset($_GET['id'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']));
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $userInfo = curl_exec($ch);
-    $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $userResult = json_decode($userInfo, true);
+        // Perform the first request to get user info
+        $userResponse = $client->request('GET', $url, [
+            'headers' => $headers,
+        ]);
 
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
-        //Get user status
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/streams?user_id=" . $userResult['data'][0]['id']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $userResponse = curl_exec($ch);
+        $userStatus = $userResponse->getStatusCode();
+        $userResult = json_decode($userResponse->getBody()->getContents(), true);
 
+        if ($userStatus == 200 && count($userResult['data']) > 0) {
+            // Get the user ID from the response
+            $userId = $userResult['data'][0]['id'];
+
+            // Perform the second request to get the user stream info
+            $streamUrl = "https://api.twitch.tv/helix/streams?user_id=" . $userId;
+
+            $streamResponse = $client->request('GET', $streamUrl, [
+                'headers' => $headers,
+            ]);
+
+            header('Content-type: application/json');
+
+            echo $streamResponse->getBody()->getContents();
+        } else {
+            // Return an empty data array
+            header('Content-type: application/json');
+
+            echo json_encode(["data" => []]);
+        }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        // Handle request exceptions
         header('Content-type: application/json');
-
-        echo $userResponse;
-
-    } else {
-        
-        // return and empty data array/object
-        $userResponse = array(
-            "data" => []
-        );
-    
-        $userResponse = json_encode($userResponse, true);
-    
+        echo json_encode([
+            "error" => "Request failed",
+            "message" => $e->getMessage()
+        ]);
+    } catch (Exception $e) {
+        // Handle general exceptions
         header('Content-type: application/json');
-    
-        echo $userResponse;
+        echo json_encode([
+            "error" => "Bad Request",
+            "message" => $e->getMessage()
+        ]);
     }
-
-    curl_close($ch);
 
 } else {
-        
-        // return and empty data array/object
-        $userResponse = array(
-            "data" => []
-        );
-    
-        $userResponse = json_encode($userResponse, true);
-    
-        header('Content-type: application/json');
-    
-        echo $userResponse;
+
+    // return and empty data array/object
+    $userResponse = ["data" => []];
+
+    header('Content-type: application/json');
+
+    echo json_encode(["data" => []]);
 }
-?>
