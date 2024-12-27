@@ -13,7 +13,7 @@ $headers = [
 $ItemsArray = [];
 $ical = isset($_GET['ical']) ? $_GET['ical'] : false;
 $html = isset($_GET['html']) ? $_GET['html'] : false;
-$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
+//$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
 
 if (isset($_GET['channel'])) {
     try {
@@ -28,7 +28,7 @@ if (isset($_GET['channel'])) {
 
         if ($userStatus == 200 && count($userResult['data']) > 0) {
             $broadcasterId = $userResult['data'][0]['id'];
-            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&first=" . $limit;
+            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId;
             $pagination = true;
 
             while ($pagination) {
@@ -40,7 +40,7 @@ if (isset($_GET['channel'])) {
                 $ItemsArray = array_merge($ItemsArray, $scheduleData['data']['segments']);
 
                 if (isset($scheduleData['pagination']['cursor'])) {
-                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&first=" . $limit . "&after=" . $scheduleData['pagination']['cursor'];
+                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&after=" . $scheduleData['pagination']['cursor'];
                 } else {
                     $pagination = false;
                 }
