@@ -13,12 +13,19 @@ $headers = [
 $ItemsArray = [];
 $ical = isset($_GET['ical']) ? $_GET['ical'] : false;
 $html = isset($_GET['html']) ? $_GET['html'] : false;
-//$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
 
-if (isset($_GET['channel'])) {
+if (isset($_GET['channel']) || isset($_GET['id'])) {
     try {
-        // Get user info
-        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        
+        // Determine the API endpoint for the user info
+        if (isset($_GET['channel'])) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        } elseif (isset($_GET['id'])) {
+            $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
+        } else {
+            throw new Exception("Invalid parameters. Provide either 'channel' or 'id'.");
+        }
+
         $response = $client->request('GET', $url, [
             'headers' => $headers
         ]);
@@ -91,4 +98,3 @@ function generateHTML($items)
         return "<div class='event item'><span class='start_date'>" . $item['start_time'] . "</span><span class='title'>" . $item['title'] . "</span></div>";
     }, $items)) . "</div><script src='/assets/functions.js?cachebust=oL8nT1pQ5qI7gC8r'></script></body></html>";
 }
-?>
