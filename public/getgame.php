@@ -5,6 +5,8 @@ use GuzzleHttp\Client;
 
 $client = new Client();
 
+$itemsArray = [];
+
 $headers = [
     'Authorization' => 'Bearer ' . AUTH_TOKEN,
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
@@ -25,12 +27,38 @@ if (isset($_GET['id']) || isset($_GET['name'])) {
         ]);
 
         // Get the response body and status code
-        $userResponse = $response->getBody()->getContents();
+        $userData = json_decode($response->getBody(), true);
         $userStatus = $response->getStatusCode();
 
-        // Output the response as JSON
+        foreach ($userData['data'] as $data) {
+            // Use the box_art_url to create the scaled "usable" box art image
+            $box_art_url = $data['box_art_url'];
+            // define size
+            $width = 285;
+            $height = 380;
+            // Replace box_art_url
+            $box_art_scaled = str_replace(
+                ['{width}', '{height}'],
+                [$width, $height],
+                $box_art_url
+            );
+
+            $itemsArray[] = [
+                "id" => $data['id'],
+                "name" => $data['name'],
+                "box_art_url" => $data['box_art_url'],
+                "igdb_id" => $data['igdb_id'],
+                "box_art_url_scaled" => $box_art_scaled,
+            ];
+        }
+
+        $dataArray = [
+            "data" => $itemsArray
+        ];
+
         header('Content-type: application/json');
-        echo $userResponse;
+        echo json_encode($dataArray);
+
     } catch (\GuzzleHttp\Exception\RequestException $e) {
         // Handle request errors
         header('Content-type: application/json');
@@ -48,8 +76,10 @@ if (isset($_GET['id']) || isset($_GET['name'])) {
     }
 } else {
     // return an empty data array/object
-    $userResponse = ["data" => []];
+    $dataArray = [
+        "data" => []
+    ];
 
     header('Content-type: application/json');
-    echo json_encode($userResponse, true);
+    echo json_encode($dataArray);
 }
