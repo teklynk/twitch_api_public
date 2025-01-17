@@ -18,7 +18,7 @@ RUN git config --global --add safe.directory /var/www/html
 WORKDIR /var/www/html
 
 # Copy the application code to the container
-COPY . /var/www/html/
+COPY . .
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
