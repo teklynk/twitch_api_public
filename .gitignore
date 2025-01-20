@@ -34,3 +34,4 @@ index.nginx-debian.html
 config/.auth
 .auth
 .env
+.test
