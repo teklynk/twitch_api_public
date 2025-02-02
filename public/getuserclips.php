@@ -19,6 +19,7 @@ $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 $prefer_featured = isset($_GET['prefer_featured']) ? $_GET['prefer_featured'] : '';
 $creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_name'])) : '';
+$ignore = isset($_GET['ignore']) ? $_GET['ignore'] : '';
 $itemCount = 0;
 
 $itemsArray = [];
@@ -79,6 +80,11 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                 $userData = json_decode($response->getBody(), true);
 
                 foreach ($userData['data'] as $data) {
+
+                    if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                        continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+                    }
+
                     $inc_data = false;
 
                     // Filter for creator_name and prefer_featured
@@ -233,6 +239,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $userData = json_decode($response->getBody(), true);
 
         foreach ($userData['data'] as $data) {
+
+            if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+            }
+            
             if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
                 $body = json_encode([
                     [
