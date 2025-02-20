@@ -20,6 +20,7 @@ $id = isset($_GET['id']) ? $_GET['id'] : '';
 $prefer_featured = isset($_GET['prefer_featured']) ? $_GET['prefer_featured'] : '';
 $creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_name'])) : '';
 $itemCount = 0;
+$shuffle = isset($_GET['shuffle']) ? $_GET['shuffle'] : 'false';
 
 $itemsArray = [];
 
@@ -167,10 +168,6 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                     }
                 }
 
-                $dataArray = [
-                    "data" => $itemsArray
-                ];
-
                 // Pull a single random clip   IE: &random=true
                 if (!empty($random) && $random == "true") {
                     $array_item = [];
@@ -193,6 +190,19 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                     header('Content-type: application/json');
                     echo json_encode($array_data);
                 } else {
+
+                    if ($shuffle === 'true') {
+                        $itemsArray = array_values($itemsArray); // Reset keys after loop
+                        shuffle($itemsArray); // Shuffle the array
+                        $dataArray = [
+                            "data" => $itemsArray
+                        ];
+                    } else {
+                        $dataArray = [
+                            "data" => $itemsArray
+                        ];
+                    }
+
                     // Return all clips
                     header('Content-type: application/json');
                     echo json_encode($dataArray);
@@ -291,7 +301,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $dataArray = [
             "data" => $itemsArray
         ];
-
+        
         header('Content-type: application/json');
         echo json_encode($dataArray);
     } else {
