@@ -174,6 +174,10 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                     }
                 }
 
+                $dataArray = [
+                    "data" => $itemsArray
+                ];
+
                 // Pull a single random clip   IE: &random=true
                 if (!empty($random) && $random == "true") {
                     $array_item = [];
