@@ -153,6 +153,8 @@ Example: https://example.com/getuserclips.php?id=DelightfulSuaveMacaroniNerfRedB
 
 Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
 
+*Ignore / skip newer Twitch clip URLs. `&ignore=new`
+
 
 ## End points examples:
 
