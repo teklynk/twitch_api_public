@@ -82,9 +82,9 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
 
                 foreach ($userData['data'] as $data) {
 
-                    if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-                        continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
-                    }
+                    //if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                    //    continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+                    //}
 
                     $inc_data = false;
 
@@ -110,7 +110,7 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                     }
 
                     if ($inc_data) {
-                        if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+                        //if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
                             $body = json_encode([
                                 [
                                     "operationName" => "VideoAccessToken_Clip",
@@ -142,11 +142,11 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                             $clipsVideoSource = $clipsArray[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
                             $clipUrl = $clipsVideoSource . '?sig=' . $clipsSignature . '&token=' . $clipsToken;
-                        } else {
+                        //} else {
                             // Use the thumbnail url to create the clip url
-                            $clipUrl = explode("-preview-", $data['thumbnail_url']);
-                            $clipUrl = $clipUrl[0] . ".mp4";
-                        }
+                        //    $clipUrl = explode("-preview-", $data['thumbnail_url']);
+                        //    $clipUrl = $clipUrl[0] . ".mp4";
+                        //}
 
                         $itemCount++;
 
@@ -254,11 +254,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
         foreach ($userData['data'] as $data) {
 
-            if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-                continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
-            }
+            //if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+            //    continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
+            //}
             
-            if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
+            //if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
                 $body = json_encode([
                     [
                         "operationName" => "VideoAccessToken_Clip",
@@ -282,11 +282,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
                 $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
-            } else {
+            //} else {
                 // Use the thumbnail url to create the clip url
-                $clip_url = explode("-preview-", $data['thumbnail_url']);
-                $clip_url = $clip_url[0] . ".mp4";
-            }
+            //    $clip_url = explode("-preview-", $data['thumbnail_url']);
+            //    $clip_url = $clip_url[0] . ".mp4";
+            //}
 
             $itemCount++;
 
