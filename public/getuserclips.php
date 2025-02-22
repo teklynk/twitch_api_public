@@ -13,11 +13,11 @@ $headers = [
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
 $after = isset($_GET['after']) ? $_GET['after'] : '';
 $before = isset($_GET['before']) ? $_GET['before'] : '';
-$random = isset($_GET['random']) ? $_GET['random'] : '';
+$random = isset($_GET['random']) ? $_GET['random'] : 'false';
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
-$prefer_featured = isset($_GET['prefer_featured']) ? $_GET['prefer_featured'] : '';
+$prefer_featured = isset($_GET['prefer_featured']) ? $_GET['prefer_featured'] : 'false';
 $creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_name'])) : '';
 $ignore = isset($_GET['ignore']) ? $_GET['ignore'] : '';
 $itemCount = 0;
@@ -82,10 +82,6 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
 
                 foreach ($userData['data'] as $data) {
 
-                    //if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-                    //    continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
-                    //}
-
                     $inc_data = false;
 
                     // Filter for creator_name and prefer_featured
@@ -110,43 +106,38 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                     }
 
                     if ($inc_data) {
-                        //if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-                            $body = json_encode([
-                                [
-                                    "operationName" => "VideoAccessToken_Clip",
-                                    "variables" => [
-                                        "platform" => "web",
-                                        "slug" => $data['id']
-                                    ],
-                                    "extensions" => [
-                                        "persistedQuery" => [
-                                            "version" => 1,
-                                            "sha256Hash" => TWITCH_SHA256HASH
-                                        ]
+      
+                        $body = json_encode([
+                            [
+                                "operationName" => "VideoAccessToken_Clip",
+                                "variables" => [
+                                    "platform" => "web",
+                                    "slug" => $data['id']
+                                ],
+                                "extensions" => [
+                                    "persistedQuery" => [
+                                        "version" => 1,
+                                        "sha256Hash" => TWITCH_SHA256HASH
                                     ]
                                 ]
-                            ]);
+                            ]
+                        ]);
 
-                            $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
-                                'headers' => [
-                                    'Content-Type' => 'application/json',
-                                    'Client-ID' => TWITCH_CLIENT_ID
-                                ],
-                                'body' => $body
-                            ]);
+                        $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
+                            'headers' => [
+                                'Content-Type' => 'application/json',
+                                'Client-ID' => TWITCH_CLIENT_ID
+                            ],
+                            'body' => $body
+                        ]);
 
-                            $clipsArray = json_decode($response->getBody(), true);
+                        $clipsArray = json_decode($response->getBody(), true);
 
-                            $clipsSignature = $clipsArray[0]['data']['clip']['playbackAccessToken']['signature'];
-                            $clipsToken = urlencode($clipsArray[0]['data']['clip']['playbackAccessToken']['value']);
-                            $clipsVideoSource = $clipsArray[0]['data']['clip']['videoQualities'][0]['sourceURL'];
+                        $clipsSignature = $clipsArray[0]['data']['clip']['playbackAccessToken']['signature'];
+                        $clipsToken = urlencode($clipsArray[0]['data']['clip']['playbackAccessToken']['value']);
+                        $clipsVideoSource = $clipsArray[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
-                            $clipUrl = $clipsVideoSource . '?sig=' . $clipsSignature . '&token=' . $clipsToken;
-                        //} else {
-                            // Use the thumbnail url to create the clip url
-                        //    $clipUrl = explode("-preview-", $data['thumbnail_url']);
-                        //    $clipUrl = $clipUrl[0] . ".mp4";
-                        //}
+                        $clipUrl = $clipsVideoSource . '?sig=' . $clipsSignature . '&token=' . $clipsToken;
 
                         $itemCount++;
 
@@ -254,39 +245,29 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
         foreach ($userData['data'] as $data) {
 
-            //if ($ignore === 'new' && strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-            //    continue; // skip clips that contain the https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/ thumnail url. These urls no longer work as of Sept 2024.
-            //}
-            
-            //if (strpos($data['thumbnail_url'], 'https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/') !== false) {
-                $body = json_encode([
-                    [
-                        "operationName" => "VideoAccessToken_Clip",
-                        "variables" => ["platform" => "web", "slug" => $data['id']],
-                        "extensions" => ["persistedQuery" => ["version" => 1, "sha256Hash" => TWITCH_SHA256HASH]]
-                    ]
-                ]);
+            $body = json_encode([
+                [
+                    "operationName" => "VideoAccessToken_Clip",
+                    "variables" => ["platform" => "web", "slug" => $data['id']],
+                    "extensions" => ["persistedQuery" => ["version" => 1, "sha256Hash" => TWITCH_SHA256HASH]]
+                ]
+            ]);
 
-                $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'Client-ID' => TWITCH_CLIENT_ID
-                    ],
-                    'body' => $body
-                ]);
+            $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Client-ID' => TWITCH_CLIENT_ID
+                ],
+                'body' => $body
+            ]);
 
-                $clips_array = json_decode($response->getBody(), true);
+            $clips_array = json_decode($response->getBody(), true);
 
-                $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
-                $clips_token = urlencode($clips_array[0]['data']['clip']['playbackAccessToken']['value']);
-                $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
+            $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
+            $clips_token = urlencode($clips_array[0]['data']['clip']['playbackAccessToken']['value']);
+            $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
 
-                $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
-            //} else {
-                // Use the thumbnail url to create the clip url
-            //    $clip_url = explode("-preview-", $data['thumbnail_url']);
-            //    $clip_url = $clip_url[0] . ".mp4";
-            //}
+            $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
 
             $itemCount++;
 
