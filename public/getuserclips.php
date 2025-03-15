@@ -76,9 +76,11 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
             ]);
 
             $userStatus = $response->getStatusCode();
-            if ($userStatus == 200) {
-                // all clips data
-                $userData = json_decode($response->getBody(), true);
+
+            // all clips data
+            $userData = json_decode($response->getBody(), true);
+
+            if ($userStatus == 200 && count($userData['data']) > 0) {
 
                 foreach ($userData['data'] as $data) {
 
