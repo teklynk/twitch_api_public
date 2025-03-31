@@ -25,20 +25,6 @@ $shuffle = isset($_GET['shuffle']) ? $_GET['shuffle'] : 'false';
 
 $itemsArray = [];
 
-if (!empty($after)) {
-    $afterVar = "&after=" . $after;
-    $beforeVar = "";
-} else {
-    $afterVar = "";
-}
-
-if (!empty($before)) {
-    $beforeVar = "&before=" . $before;
-    $afterVar = "";
-} else {
-    $beforeVar = "";
-}
-
 if ($limit > 100) {
     $limit = 100;
 }
@@ -70,7 +56,7 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
         // check if http status is good and that there is data/clips
         if ($userStatus == 200 && count($userResult['data']) > 0) {
             // Get user clips
-            $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $afterVar . $beforeVar . $start_dateVar . $end_dateVar;
+            $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $start_dateVar . $end_dateVar;
             $response = $client->request('GET', $url, [
                 'headers' => $headers
             ]);
