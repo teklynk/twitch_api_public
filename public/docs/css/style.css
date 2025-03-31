@@ -524,3 +524,14 @@ body.one-content-column-version .content thead {
 .cf:before, .cf:after { content: ""; display: block; }
 .cf:after { clear: both; }
 .ie6 .cf { zoom: 1 }
+
+/* Custom Styles */
+.content-page .content p, .content-page .content pre {
+    max-width: 50%;
+}
+
+@media (max-width: 980px) {
+    .content-page .content p, .content-page .content pre {
+        max-width: 100%;
+    }
+}
