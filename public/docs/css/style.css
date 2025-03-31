@@ -143,7 +143,7 @@ pre{
     display: inline-block;
     margin-left: 10px;
     vertical-align: middle;
-    color: #323F4C;
+    color: #0d1117;
     font-size: 1.1em;
 }
 .content-menu{
@@ -205,8 +205,8 @@ pre{
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: #323f4c;
-    border-color: #323f4c;
+    background-color: #0d1117;
+    border-color: #0d1117;
 }
 .content {
     position: relative;
@@ -279,8 +279,8 @@ pre{
 }
 .content pre,
 .content blockquote {
-    background-color: #323f4c;
-    border-color: #323f4c;
+    background-color: #0d1117;
+    border-color: #0d1117;
     color: #fff;
     padding: 0 28px 2em;
     margin: 0;
@@ -289,10 +289,7 @@ pre{
     clear: right;
     box-sizing: border-box;
 }
-.content pre code, .content pre {
-    font-size: 12px;
-    line-height: 1.5;
-}
+
 .content blockquote,
 .content pre,
 .content pre code{
@@ -405,7 +402,7 @@ body.one-content-column-version .content-page .content pre {
     max-width: 100%;
 }
 body.one-content-column-version .content-page {
-    background-color: #323f4c;
+    background-color: #0d1117;
 }
 body.one-content-column-version .content h1:first-child,
 body.one-content-column-version .content h2,
