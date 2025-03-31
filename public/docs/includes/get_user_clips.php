@@ -72,7 +72,7 @@ Result example :
         <td>channel</td>
         <td>String</td>
         <td>
-            (required) a boolean to filter alived characters
+            (required) Twitch channel name
         </td>
     </tr>
     <tr>

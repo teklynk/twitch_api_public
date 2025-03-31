@@ -48,6 +48,24 @@
             <li class="scroll-to-link" data-target="content-get-clips">
                 <a>Get User Clips</a>
             </li>
+            <li class="scroll-to-link" data-target="content-get-stream">
+                <a>Get Stream</a>
+            </li>
+            <li class="scroll-to-link" data-target="content-get-info">
+                <a>Get User Info</a>
+            </li>
+            <li class="scroll-to-link" data-target="content-get-game">
+                <a>Get Game</a>
+            </li>
+            <li class="scroll-to-link" data-target="content-get-status">
+                <a>Get User Status</a>
+            </li>
+            <li class="scroll-to-link" data-target="content-get-emotes">
+                <a>Get User Emotes</a>
+            </li>
+            <li class="scroll-to-link" data-target="content-get-globalemotes">
+                <a>Get Global Emotes</a>
+            </li>
         </ul>
     </div>
 </div>
@@ -59,6 +77,24 @@
         </div>
         <div class="overflow-hidden content-section" id="content-get-clips">
         <?php require_once(__DIR__ . '/includes/get_user_clips.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-stream">
+        <?php require_once(__DIR__ . '/includes/get_stream.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-info">
+        <?php require_once(__DIR__ . '/includes/get_user_info.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-game">
+        <?php require_once(__DIR__ . '/includes/get_game.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-status">
+        <?php require_once(__DIR__ . '/includes/get_user_status.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-emotes">
+        <?php require_once(__DIR__ . '/includes/get_user_emotes.php'); ?>
+        </div>
+        <div class="overflow-hidden content-section" id="content-get-globalemotes">
+        <?php require_once(__DIR__ . '/includes/get_globalemotes.php'); ?>
         </div>
     </div>
     <div class="content-code"></div>
