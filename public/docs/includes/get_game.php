@@ -1,11 +1,11 @@
 <h2>Get Game</h2>
 <pre><code class="bash">
 # Here is a curl example
-curl -X GET 'http://server_url/getgame.php?id=1299144050'
+curl -X GET 'http://localhost:8080/getgame.php?id=1299144050'
 </code></pre>
 <p>
     Make a GET call to the following url :<br>
-    <code class="higlighted break-word">http://server_url/getgame.php</code>
+    <code class="higlighted break-word">http://localhost:8080/getgame.php</code>
 </p>
 
 <pre><code class="json">

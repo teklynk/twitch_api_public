@@ -11,9 +11,6 @@
     <title>API - Documentation</title>
     <meta name="description" content="">
     <meta name="author" content="teklynk">
-
-    <meta http-equiv="cleartype" content="on">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
@@ -73,28 +70,28 @@
     <div class="content-code"></div>
     <div class="content">
         <div class="overflow-hidden content-section" id="content-get-started">
-        <?php require_once(__DIR__ . '/includes/get_started.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_started.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-clips">
-        <?php require_once(__DIR__ . '/includes/get_user_clips.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_user_clips.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-stream">
-        <?php require_once(__DIR__ . '/includes/get_stream.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_stream.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-info">
-        <?php require_once(__DIR__ . '/includes/get_user_info.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_user_info.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-game">
-        <?php require_once(__DIR__ . '/includes/get_game.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_game.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-status">
-        <?php require_once(__DIR__ . '/includes/get_user_status.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_user_status.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-emotes">
-        <?php require_once(__DIR__ . '/includes/get_user_emotes.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_user_emotes.php'); ?>
         </div>
         <div class="overflow-hidden content-section" id="content-get-globalemotes">
-        <?php require_once(__DIR__ . '/includes/get_globalemotes.php'); ?>
+            <?php require_once(__DIR__ . '/includes/get_globalemotes.php'); ?>
         </div>
     </div>
     <div class="content-code"></div>

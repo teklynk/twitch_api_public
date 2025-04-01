@@ -8,22 +8,28 @@
     <li>PHP 7.4 or higher</li>
     <li>Composer</li>
     <li>nginx or Apache web server</li>
-    <li>SSL certificate (https)</li>
 </ul>
 
 <h2>Installation</h2>
 <ol>
     <li>Clone the repository to your server.</li>
-    <li>Run composer install in the root directory of the cloned repository.</li>
-    <li>Set up a virtual host for your domain/subdomain.</li>
-    <li>Set up SSL for your domain/subdomain.</li>
+    <li>Install php composer. <a href="https://getcomposer.org/download/" target="_blank">Installation instructions</a>.</li>
+    <li>Run `composer install` in the root directory of the cloned repository.</li>
+    <li>Set up a virtual host for your domain/subdomain. Review the nginx.conf file as an example.</li>
+    <li>Rename `sample.env` to `.env`</li>
     <li>Edit the `.env` file with your Twitch client id and auth token.</li>
     <li>Create file `.auth` inside the `config` directory. Example: `config/.auth`. Make sure that the `.auth` file has write permissions.</li>
-    <li>Install php composer. <a href="https://getcomposer.org/download/" target="_blank">Installation instructions</a>.</li>
-    <li>Run the following command to install the required packages: `composer install`</li>
 </ol>
 
 <h2>(Optional) Install Using Docker</h2>
-<p>docker compose up -d</p>
-<p>The `docker-compose.yml` will create 3 containers (php-fpm, composer, nginx)</p>
-<p>The api will be available at `http://localhost:8080`</p>
+<ol>
+    <li>Install docker and docker-compose</li>
+    <li>Clone the repository to your server or local machine.</li>
+    <li>Rename `sample.env` to `.env`</li>
+    <li>Edit the `.env` file with your Twitch client id and auth token.</li>
+    <li>Create file `.auth` inside the `config` directory. Example: `config/.auth`. Make sure that the `.auth` file has write permissions.</li>
+    <li>docker-compose build</li>
+    <li>docker-compose up -d</li>
+    <li>The `docker-compose.yml` will create 3 containers (php-fpm, composer, nginx)</li>
+    <li>You should now be able to access the application by visiting http://localhost:8080 in your web browser.</li>
+</ol>

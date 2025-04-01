@@ -1,11 +1,11 @@
 <h2>Get Stream</h2>
 <pre><code class="bash">
 # Here is a curl example
-curl -X GET 'http://server_url/getstream.php?channel=gogcom'
+curl -X GET 'http://localhost:8080/getstream.php?channel=gogcom'
 </code></pre>
 <p>
     Make a GET call to the following url :<br>
-    <code class="higlighted break-word">http://server_url/getstream.php</code>
+    <code class="higlighted break-word">http://localhost:8080/getstream.php</code>
 </p>
 
 <pre><code class="json">

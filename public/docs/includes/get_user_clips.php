@@ -1,11 +1,11 @@
 <h2>Get User Clips</h2>
 <pre><code class="bash">
 # Here is a curl example
-curl -X GET 'http://server_url/getuserclips.php?channel=twitch&limit=2&start_date=2023-02-15T00:00:00Z&end_date=2024-02-15T00:00:00Z&prefer_featured=false'
+curl -X GET 'http://localhost:8080/getuserclips.php?channel=twitch&limit=2&start_date=2023-02-15T00:00:00Z&end_date=2024-02-15T00:00:00Z&prefer_featured=false'
 </code></pre>
 <p>
     Make a GET call to the following url :<br>
-    <code class="higlighted break-word">http://server_url/getuserclips.php</code>
+    <code class="higlighted break-word">http://localhost:8080/getuserclips.php</code>
 </p>
 
 <pre><code class="json">

@@ -44,7 +44,6 @@ body{
     position:relative;
     min-height: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
     font-family: 'Roboto', sans-serif;
 }
 strong{
@@ -68,14 +67,12 @@ i{
     cursor: pointer;
 }
 p, .content ul, .content ol{
-    font-size: 14px;
     color: #777A7A;
     margin-bottom: 16px;
     line-height: 1.6;
     font-weight: 300;
 }
 .content h1:first-child{
-    font-size: 1.333em;
     color: #034c8f;
     padding-top: 2.5em;
     text-transform: uppercase;
@@ -109,7 +106,6 @@ pre{
     box-sizing: border-box;
     background-color: #f4f5f8;
     overflow-x: hidden;
-    font-size: 18px;
 }
 .left-menu .content-infos {
     position: relative;
@@ -118,7 +114,6 @@ pre{
 }
 .left-menu .info {
     position: relative;
-    font-size: 14px;
     margin-top: 5px;
     color: #777A7A;
 }
@@ -144,7 +139,6 @@ pre{
     margin-left: 10px;
     vertical-align: middle;
     color: #0d1117;
-    font-size: 1.1em;
 }
 .content-menu{
     margin: 2em auto 2em;
@@ -229,7 +223,6 @@ pre{
     padding: 0 28px;
     box-sizing: border-box;
     display: block;
-    max-width: 680px;
 }
 .content .central-overflow-x {
     margin-right: calc(50% + 28px);
@@ -257,25 +250,16 @@ pre{
 .content h4,
 .content h5,
 .content h6 {
-    font-size: 15px;
     margin-top: 2.5em;
     margin-bottom: 0.8em;
     color: #034c8f;
     text-transform: uppercase;
 }
-.content h2{
-    font-size: 1.333em;
-}
 .content h4{
     color: #00a8e3;
     margin-top: 0;
     text-transform: none;
-    font-size: 14px;
     margin-bottom: 0.2em;
-}
-.content-page .content p,
-.content-page .content pre {
-    max-width: 680px;
 }
 .content pre,
 .content blockquote {
@@ -300,7 +284,6 @@ pre{
     margin-top: -2em;
 }
 .content table {
-    font-size: 0.825em;
     margin-bottom: 1.5em;
     border-collapse: collapse;
     border-spacing: 0;
@@ -309,7 +292,6 @@ pre{
     border-bottom: 1px solid #ccc;
 }
 .content table th {
-    font-size: 0.925em;
     padding: 5px 18px 5px 0;
     border-bottom: 1px solid #ccc;
     vertical-align: bottom;
