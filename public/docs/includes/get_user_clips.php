@@ -99,5 +99,26 @@ Result example :
         <td>Integer</td>
         <td>(optional - default: 100) A limit on the number of objects to be returned, between 1 and 100.</td>
     </tr>
+    <tr>
+        <td>id</td>
+        <td>String</td>
+        <td>(Example) ?id=VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4</td>
+    </tr>
+    <tr>
+        <td>random</td>
+        <td>Boolean</td>
+        <td>(Example) Pull a single random clip. IE: ?channel=twitch&random=true</td>
+    </tr>
+    <tr>
+        <td>count</td>
+        <td>Integer</td>
+        <td>(Example) Used with `random`. IE: ?channel=twitch&random=true&count=4</td>
+    </tr>
+    <tr>
+        <td>shuffle</td>
+        <td>Boolean</td>
+        <td>(Example) Shuffle the returned objects. IE: ?channel=twitch&shuffle=true</td>
+    </tr>
+
     </tbody>
 </table>
