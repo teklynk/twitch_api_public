@@ -102,23 +102,22 @@ Result example :
     <tr>
         <td>id</td>
         <td>String</td>
-        <td>(Example) ?id=VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4</td>
-    </tr>
-    <tr>
-        <td>random</td>
-        <td>Boolean</td>
-        <td>(Example) Pull a single random clip. IE: ?channel=twitch&random=true</td>
-    </tr>
-    <tr>
-        <td>count</td>
-        <td>Integer</td>
-        <td>(Example) Used with `random`. IE: ?channel=twitch&random=true&count=4</td>
+        <td>(example) ?id=VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4</td>
     </tr>
     <tr>
         <td>shuffle</td>
         <td>Boolean</td>
-        <td>(Example) Shuffle the returned objects. IE: ?channel=twitch&shuffle=true</td>
+        <td>(example) Shuffle the returned objects. IE: ?channel=twitch&shuffle=true</td>
     </tr>
-
+    <tr>
+        <td>random</td>
+        <td>Boolean</td>
+        <td>(example) Pull a single random clip. IE: ?channel=twitch&random=true</td>
+    </tr>
+    <tr>
+        <td>count</td>
+        <td>Integer</td>
+        <td>(example) Used with `random`. IE: ?channel=twitch&random=true&count=4</td>
+    </tr>
     </tbody>
 </table>

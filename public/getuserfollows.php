@@ -53,7 +53,7 @@ if (isset($_GET['channel']) || isset($_GET['id'])) {
 
         if ($userStatus == 200 && count($userInfo['data']) > 0) {
             // Get user followers
-            $url = "https://api.twitch.tv/helix/channels/followers?first=" . trim(strtolower($limit)) . "&broadcaster_id=" . $userInfo['data'][0]['id'] . $afterVar;
+            $url = "https://api.twitch.tv/helix/channels/followers?first=" . trim(strtolower($limit)) . "&broadcaster_id=" . $userInfo['data'][0]['id'] . $beforeVar . $afterVar;
             $response = $client->request('GET', $url, [
                 'headers' => $headers
             ]);

@@ -505,6 +505,9 @@ body.one-content-column-version .content thead {
 .ie6 .cf { zoom: 1 }
 
 /* Custom Styles */
+.blue {
+    color: #034c8f;
+}
 .content-page .content p, .content-page .content pre {
     max-width: 50%;
 }

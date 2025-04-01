@@ -11,8 +11,6 @@ $headers = [
 ];
 
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
-$after = isset($_GET['after']) ? $_GET['after'] : '';
-$before = isset($_GET['before']) ? $_GET['before'] : '';
 $random = isset($_GET['random']) ? $_GET['random'] : 'false';
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
