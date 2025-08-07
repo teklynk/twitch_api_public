@@ -14,10 +14,19 @@ $bttvHeaders = [
     'Accept' => 'application/json'
 ];
 
-if (isset($_GET['channel'])) {
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
+
+if ($channel) {
     try {
         // Get user info
-        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
         $response = $client->request('GET', $url, [
             'headers' => $headers
         ]);

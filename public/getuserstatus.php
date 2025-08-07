@@ -10,12 +10,21 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
-if (isset($_GET['channel']) || isset($_GET['id'])) {
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
+
+if ($channel || isset($_GET['id'])) {
 
     try {
         // Get user id and info
-        if (isset($_GET['channel'])) {
-            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        if ($channel) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
         } elseif (isset($_GET['id'])) {
             $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
         }

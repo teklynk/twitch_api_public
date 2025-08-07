@@ -20,6 +20,14 @@ $creator_name = isset($_GET['creator_name']) ? trim(strtolower($_GET['creator_na
 $ignore = isset($_GET['ignore']) ? $_GET['ignore'] : '';
 $itemCount = 0;
 $shuffle = isset($_GET['shuffle']) ? $_GET['shuffle'] : 'false';
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
 
 $itemsArray = [];
 
@@ -39,10 +47,10 @@ if (!empty($end_date)) {
     $end_dateVar = "";
 }
 
-if (isset($_GET['channel']) && !empty($_GET['channel'])) {
+if ($channel) {
     try {
         // Get user info
-        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
 
         $response = $client->request('GET', $url, [
             'headers' => $headers
@@ -196,11 +204,15 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
                 }
 
             } else {
-                // Return an empty data array/object if user not found
-                $dataArray = ["data" => []];
+                // Return an empty data array if user/channel not found
                 header('Content-type: application/json');
-                echo json_encode($dataArray, true);
+                echo json_encode(["data" => []]);
             }
+        } else {
+            // return an empty data array/object
+            $dataArray = ["data" => []];
+            header('Content-type: application/json');
+            echo json_encode($dataArray);
         }
     } catch (GuzzleHttp\Exception\RequestException $e) {
         header('Content-type: application/json');

@@ -14,12 +14,21 @@ $ItemsArray = [];
 $ical = isset($_GET['ical']) ? $_GET['ical'] : false;
 $html = isset($_GET['html']) ? $_GET['html'] : false;
 
-if (isset($_GET['channel']) || isset($_GET['id'])) {
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
+
+if ($channel || isset($_GET['id'])) {
     try {
         
         // Determine the API endpoint for the user info
-        if (isset($_GET['channel'])) {
-            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        if ($channel) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
         } elseif (isset($_GET['id'])) {
             $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
         } else {

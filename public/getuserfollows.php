@@ -10,6 +10,14 @@ $after = isset($_GET['after']) ? $_GET['after'] : '';
 $before = isset($_GET['before']) ? $_GET['before'] : '';
 $ref = isset($_GET['ref']) ? $_GET['ref'] : ''; //needs to be base64 encoded
 $clientId = isset($_GET['clientId']) ? $_GET['clientId'] : ''; //needs to be base64 encoded
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
 
 $headers = [
     'Authorization' => 'Bearer ' . base64_decode($ref),
@@ -34,12 +42,12 @@ if ($limit > 100) {
     $limit = 100;
 }
 
-if (isset($_GET['channel']) || isset($_GET['id'])) {
+if ($channel || isset($_GET['id'])) {
 
     try {
         // Get user id and info
-        if (isset($_GET['channel'])) {
-            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        if ($channel) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
         } elseif (isset($_GET['id'])) {
             $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
         }

@@ -119,6 +119,8 @@ if (strtotime($date_now) > strtotime($authFileModDate) || file_get_contents($aut
     }
 }
 
+$ignoreKeywords = array("http", "https", "twitch.tv");
+
 $authtoken = file_get_contents($authFile);
 
 define('AUTH_TOKEN', trim($authtoken));

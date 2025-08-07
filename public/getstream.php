@@ -10,12 +10,21 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
-if (isset($_GET['channel']) || isset($_GET['id'])) {
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
+    }
+}
+
+if ($channel || isset($_GET['id'])) {
 
     try {
         // Determine the API endpoint for the user info
-        if (isset($_GET['channel'])) {
-            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
+        if ($channel) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
         } elseif (isset($_GET['id'])) {
             $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
         } else {
@@ -45,9 +54,8 @@ if (isset($_GET['channel']) || isset($_GET['id'])) {
 
             echo $streamResponse->getBody()->getContents();
         } else {
-            // Return an empty data array
+            // Return an empty data array if user/channel not found
             header('Content-type: application/json');
-
             echo json_encode(["data" => []]);
         }
     } catch (\GuzzleHttp\Exception\RequestException $e) {
