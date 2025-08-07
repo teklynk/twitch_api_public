@@ -10,21 +10,12 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
-$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
-
-foreach ($ignoreKeywords as $keyword) {
-    if (preg_match("/$keyword/", $channel)) {
-        $channel = null;
-        $break;
-    }
-}
-
-if ($channel || isset($_GET['id'])) {
+if (isset($_GET['channel']) || isset($_GET['id'])) {
 
     try {
         // Determine the API endpoint
-        if ($channel) {
-            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
+        if (isset($_GET['channel'])) {
+            $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel'])));
         } elseif (isset($_GET['id'])) {
             $url = "https://api.twitch.tv/helix/users?id=" . trim($_GET['id']);
         } else {
@@ -36,21 +27,13 @@ if ($channel || isset($_GET['id'])) {
             'headers' => $headers,
         ]);
 
-        
         // Get the response body and status code
         $userResponse = $response->getBody()->getContents();
         $userStatus = $response->getStatusCode();
 
-        if ($userStatus == 200 && count($userResponse['data']) > 0) {
-            // Output the response as JSON
-            header('Content-type: application/json');
-            echo $userResponse;
-        } else {
-            // Return an empty data array/object
-            $userResponse = ["data" => []];
-            header('Content-type: application/json');
-            echo json_encode($userResponse, true);
-        }
+        // Output the response as JSON
+        header('Content-type: application/json');
+        echo $userResponse;
 
     } catch (\GuzzleHttp\Exception\RequestException $e) {
         // Handle request errors
