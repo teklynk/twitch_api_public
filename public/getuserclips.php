@@ -36,7 +36,9 @@ $cached = null;
 $mem = null;
 if (class_exists('Memcached')) {
     $mem = new Memcached();
-    $mem->addServer("memcached", 11211);
+    // If using Docker
+    //$mem->addServer("memcached", 11211);
+    $mem->addServer("127.0.0.1", 11211);
     $cacheKey = 'twitch_clips_' . md5(json_encode([$channel, $id, $limit, $random, $start_date, $end_date, $prefer_featured, $creator_name, $shuffle, ($random == 'true' ? ($_GET['count'] ?? '1') : '')]));
     $cached = $mem->get($cacheKey);
 }
