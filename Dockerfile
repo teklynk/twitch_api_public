@@ -7,6 +7,10 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     sqlite3 \
+    libmemcached-dev \
+    zlib1g-dev \
+    && pecl install memcached \
+    && docker-php-ext-enable memcached \
     && docker-php-ext-install pdo pdo_mysql
 
 # Install Composer

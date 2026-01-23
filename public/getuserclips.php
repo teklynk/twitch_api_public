@@ -29,6 +29,28 @@ foreach ($ignoreKeywords as $keyword) {
     }
 }
 
+// Cache TTL in seconds. Twitch Clip URLs expire after about 1 hour
+$cacheTTL = 1800; // 30 minutes
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    $mem->addServer("memcached", 11211);
+    $cacheKey = 'twitch_clips_' . md5(json_encode([$channel, $id, $limit, $random, $start_date, $end_date, $prefer_featured, $creator_name, $shuffle, ($random == 'true' ? ($_GET['count'] ?? '1') : '')]));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
 $itemsArray = [];
 
 if ($limit > 100) {
@@ -307,4 +329,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         header('Content-type: application/json');
         echo json_encode($dataArray);
     }
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }

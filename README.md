@@ -8,6 +8,11 @@ This is a way to run your own Twitch API "gate-way" service that only requires t
 
 This project now includes a Dockerfile and docker-compose.yml for running this locally on your machine or on a remote server. `sudo docker-compose up --build`. 
 
+- Stop existing containers
+`docker-compose down`
+- Rebuild the containers (this installs the extension defined in Dockerfile)
+`docker-compose up -d --build`
+
 ### Linux Server
 
 Linux server running nginx, php, php-fpm, curl. No Database needed.
