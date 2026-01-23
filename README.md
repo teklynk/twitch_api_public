@@ -17,6 +17,8 @@ This project now includes a Dockerfile and docker-compose.yml for running this l
 - Rebuild the containers (this installs the extension defined in Dockerfile)
 `docker-compose up -d --build`
 
+If using docker, be sure to edit `getuserclips.php` and set `127.0.0.1` to the name of the memcache container `memcached`. There is a comment about this in the getuserclips.php file.
+
 ### Linux Server
 
 Linux server running nginx, php, php-fpm, curl. No Database needed.
