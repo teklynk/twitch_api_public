@@ -4,6 +4,10 @@ This is a way to run your own Twitch API "gate-way" service that only requires t
 
 ## Requirements
 
+### Ubuntu Server
+Ensure that memcache is installed and the extension is enabled in php.ini
+`sudo apt install -y memcached php8.1-memcached libmemcached-dev`
+
 ### Docker
 
 This project now includes a Dockerfile and docker-compose.yml for running this locally on your machine or on a remote server. `sudo docker-compose up --build`. 
