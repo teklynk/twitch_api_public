@@ -1,37 +1,62 @@
+# Twitch API Public Gateway
+
 ## What is this?
 
 This is a way to run your own Twitch API "gate-way" service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON string.
 
-## Requirements
+## API Documentation
 
-### Ubuntu Server
-Ensure that memcache is installed and the extension is enabled in php.ini
-`sudo apt install -y memcached php8.1-memcached libmemcached-dev`
+Documentation for the API endpoints is located in the `public/docs` directory. You can view the documentation by navigating to `/docs` in your browser once the application is running (e.g., `http://localhost/docs`).
 
-### Docker
+## Getting Started
 
-This project now includes a Dockerfile and docker-compose.yml for running this locally on your machine or on a remote server. `sudo docker-compose up --build`. 
+### Using Docker (Recommended)
 
-- Stop existing containers
-`docker-compose down`
-- Rebuild the containers (this installs the extension defined in Dockerfile)
-`docker-compose up -d --build`
+This branch includes a `Dockerfile` and `docker-compose.yml` to easily run the application locally or on a server.
 
-If using docker, be sure to edit `getuserclips.php` and set `127.0.0.1` to the name of the memcache container `memcached`. There is a comment about this in the getuserclips.php file.
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd twitch_api_public
+    ```
 
-### Linux Server
+2.  **Configure Environment:**
+    Rename `sample.env` to `.env` and add your Twitch Client ID and Secret.
+    ```bash
+    cp sample.env .env
+    ```
+    *See Configuration below for details on getting Twitch credentials.*
 
-Linux server running nginx, php, php-fpm, curl. No Database needed.
+3.  **Build and Run:**
+    ```bash
+    docker-compose up -d --build
+    ```
+    This will start the Nginx, PHP-FPM, and Memcached containers.
 
-Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
+4.  **Access the API:**
+    The API should now be accessible at `http://localhost` (or your server's IP).
 
-If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
+#### Docker Notes
+- **Memcached:** If using Docker, ensure `getuserclips.php` is configured to connect to the `memcached` container host instead of `127.0.0.1`.
+- **Stopping:** To stop the containers, run `docker-compose down`.
 
+### Manual Installation (Linux/Ubuntu)
 
-If running this on a public server, I recommend using [Cloudflare](https://www.cloudflare.com/) for its Proxy, DDoS, Firewall and Rate-Limiting features.
+If you prefer not to use Docker, you can run this on a standard LAMP/LEMP stack.
+
+1.  **Requirements:**
+    - Linux server running Nginx or Apache.
+    - PHP 8.1+ with PHP-FPM and cURL.
+    - Memcached installed and enabled (`sudo apt install -y memcached php8.1-memcached libmemcached-dev`).
+
+2.  **Web Server Config:**
+    Set the web site's root directory in the nginx/apache config to `/var/www/html/twitch_api_public/public` and not the entire `/var/www/html` directory.
+
+3.  **Security:**
+    If running this on a public server, it is recommended to use Cloudflare for its Proxy, DDoS, Firewall and Rate-Limiting features.
 
 ## NEW (June 2024)
-Getuserclips.php can now be filtered by "is_featured". This will show clips that the channel has set as Fetured.
+Getuserclips.php can now be filtered by "is_featured". This will show clips that the channel has set as Featured.
 
 https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
 
