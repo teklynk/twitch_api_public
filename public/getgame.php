@@ -12,6 +12,31 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
+$cacheTTL = 86400; // 24 hours
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_game_' . md5(json_encode([$_GET['id'] ?? '', $_GET['name'] ?? '']));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
 if (isset($_GET['id']) || isset($_GET['name'])) {
 
     try {
@@ -82,4 +107,9 @@ if (isset($_GET['id']) || isset($_GET['name'])) {
 
     header('Content-type: application/json');
     echo json_encode($dataArray);
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }

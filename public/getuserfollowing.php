@@ -19,6 +19,31 @@ foreach ($ignoreKeywords as $keyword) {
     }
 }
 
+$cacheTTL = 86400; // 24 hours
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_user_following_' . md5(json_encode([$channel, $_GET['id'] ?? '', $limit, $after, $before]));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
 $headers = [
     'Authorization' => 'Bearer ' . base64_decode($ref),
     'Client-Id' => base64_decode($clientId)
@@ -78,4 +103,9 @@ if ($channel || isset($_GET['id'])) {
         header('Content-type: application/json');
         echo json_encode(['error' => $e->getMessage()]);
     }
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }
