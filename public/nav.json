@@ -1,6 +1,6 @@
 [
   {
-    "name": "Twitch Shout-Out w/Random Clips",
+    "name": "Twitch Shout-Out",
     "url": "https://twitch-shoutout.pages.dev"
   },
   {
@@ -8,7 +8,7 @@
     "url": "https://twitch-chat-emotes.pages.dev"
   },
   {
-    "name": "Twitch Clips Reel Player w/Shout-Outs",
+    "name": "Twitch Clips Reel Player",
     "url": "https://twitch-clips-player.pages.dev"
   },
   {
@@ -17,15 +17,15 @@
   },
   {
     "name": "Twitch Chat-NES",
-    "url": "https://twitch-chat-nes.pages.dev"
+    "url": "https://twitch-chat-nes.teklynk.com"
   },
   {
     "name": "Twitch Chat Highlight",
-    "url": "https://twitch-chat-highlight.pages.dev"
+    "url": "https://twitch-chat-highlight.teklynk.com"
   },
   {
     "name": "Twitch Fart Bot",
-    "url": "https://twitch-fart-bot.pages.dev"
+    "url": "https://twitch-fart-bot.teklynk.com"
   },
   {
     "name": "Twitch Alerts Overlay System",
@@ -45,7 +45,7 @@
   },
   {
     "name": "Twitch Chat Relay",
-    "url": "https://twitch-chat-forwarder.pages.dev"
+    "url": "https://twitch-chat-forwarder.teklynk.com"
   },
   {
     "name": "Twitch Playlist Overlay",

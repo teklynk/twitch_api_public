@@ -1,11 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Basic');
 
-@font-face {
-    font-family:"Modern DOS 9x16";
-    src: url("ModernDOS9x16.ttf") format("truetype");
-}
-
-html, body {
+html,
+body {
     font-family: Basic, Helvetica, sans-serif;
     padding: 0;
     margin: 0;
@@ -19,15 +15,8 @@ html, body {
     margin: 1rem 1rem 2rem 1rem;
 }
 
-span.start_date, span.title {
+span.start_date,
+span.title {
     display: block;
     word-wrap: break-word;
-}
-
-span.start_date {
-    
-}
-
-span.title {
-    
 }

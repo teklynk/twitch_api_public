@@ -1,34 +1,113 @@
-## What is this?
+# Twitch API Public Gateway
+
+## Overview
 
 This is a way to run your own Twitch API "gate-way" service that only requires the user name/channel name to pull data. It acts as a public gateway to Twitch's API. This is useful when creating your own Twitch tools/apps and just want to get data from Twitch without passing in your client id and auth token into your code and manually refreshing your auth token every 3 months. Auth token automatically refreshes on the server every day. All requests use GET to pull data. Nothing is posted back to Twitch and nothing is stored on the server. Once set up, getting data from Twitch is as simple as going to a URL and parsing the returned JSON string.
 
-## Requirements
+## Recent Updates
 
-Linux server running nginx, php, php-fpm, curl. No Database needed.
+### June 2024
+`getuserclips.php` can now be filtered by "is_featured". This will show clips that the channel has set as Featured.
+Example: `https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100`
 
-Set the web sites root directory in the nginx config to /var/www/html/twitch_api_public/public and not the entire /var/www/html directory.
-
-If you want to use a Docker container, I recommend https://hub.docker.com/r/trafex/php-nginx/. It has Nginx and PHP configured and ready to go. Just modify the default nginx.config with the root path pointing to "root /var/www/html/twitch_api_public/public" and "server_name example.com". Add your files to /var/www/html/twitch_api_public/. Set permissions to (nobody).
-
-
-If running this on a public server, I recommend using [Cloudflare](https://www.cloudflare.com/) for its Proxy, DDoS, Firewall and Rate-Limiting features.
-
-## NEW (June 2024)
-Getuserclips.php can now be filtered by "is_featured". This will show clips that the channel has set as Fetured.
-
-https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
-
-## NEW (September 2023)
-
-Follows and Following endpoint now require a user access token and client ID that includes the user:read:follows and/or moderator:read:followers scope. This can be generated from [twitchtokengenerator.com](https://twitchtokengenerator.com/). The access token and client ID can then be used in the endpoint url: https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accessTokenXyz123Abc&clientId=abc123xyz5678 
+### September 2023
+Follows and Following endpoint now require a user access token and client ID that includes the `user:read:follows` and/or `moderator:read:followers` scope. This can be generated from twitchtokengenerator.com. The access token and client ID can then be used in the endpoint url: `https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accessTokenXyz123Abc&clientId=abc123xyz5678`
 
 The access token and client ID values need to be base_64 encoded.
-- javascript: btoa(stringToEncode);
-- php: base64_encode(stringToEncode);
+- javascript: `btoa(stringToEncode);`
+- php: `base64_encode(stringToEncode);`
 
-The JSON format for "followers" and "followed" has also changed. Please refer to: [https://dev.twitch.tv/docs/api/reference/#get-followed-channels](https://dev.twitch.tv/docs/api/reference/#get-followed-channels)
+The JSON format for "followers" and "followed" has also changed. Please refer to: Twitch API Reference
 
-## NGINX Config Example
+## Installation
+
+### Option 1: Using Docker (Recommended)
+
+This branch includes a `Dockerfile` and `docker-compose.yml` to easily run the application locally or on a server.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd twitch_api_public
+    ```
+
+2.  **Configure Environment:**
+    Rename `sample.env` to `.env` and add your Twitch Client ID and Secret.
+    ```bash
+    cp sample.env .env
+    ```
+    *See Configuration below for details on getting Twitch credentials.*
+
+3.  **Build and Run:**
+    ```bash
+    docker-compose up -d --build
+    ```
+    This will start the Nginx, PHP-FPM, and Memcached containers.
+
+4.  **Access the API:**
+    The API should now be accessible at `http://localhost:8080` (or your server's IP).
+
+**Docker Notes:**
+- **Memcached:** If using Docker, ensure `getuserclips.php` is configured to connect to the `memcached` container host instead of `127.0.0.1`.
+- **Stopping:** To stop the containers, run `docker-compose down`.
+
+### Option 2: Manual Installation (Bare Metal)
+
+If you prefer not to use Docker, you can run this on a standard LAMP/LEMP stack.
+
+#### 1. Prerequisites
+- Linux server (Ubuntu/Debian recommended)
+- Nginx or Apache
+- PHP 8.1+ (with cURL, XML, mbstring extensions)
+- Composer
+- Memcached
+
+#### 2. Install Dependencies (Ubuntu Example)
+
+**Install PHP and Extensions:**
+```bash
+sudo apt update
+sudo apt install -y php-fpm php-curl php-xml php-mbstring
+```
+
+**Install Memcached:**
+```bash
+sudo apt install -y memcached php-memcached libmemcached-dev
+sudo service memcached start
+```
+
+**Install Composer:**
+```bash
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+rm composer-setup.php
+```
+
+#### 3. Project Setup
+
+1.  **Clone the repository:**
+    ```bash
+    cd /var/www/html
+    git clone <repository-url>
+    cd twitch_api_public
+    ```
+
+2.  **Install PHP Packages:**
+    ```bash
+    composer install
+    ```
+
+3.  **Configure Environment:**
+    ```bash
+    cp sample.env .env
+    ```
+    Edit `.env` and add your Twitch credentials.
+
+#### 4. Web Server Configuration
+
+Set the web site's root directory in the nginx/apache config to `/var/www/html/twitch_api_public/public`.
+
+**NGINX Config Example:**
 ```nginx
 server {
     server_name    example.com;
@@ -48,30 +127,15 @@ server {
     }
 
     location ~* \.php$ {
-      fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+      fastcgi_pass unix:/run/php/php8.1-fpm.sock; # Adjust version as needed
       include         fastcgi_params;
       fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
       fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
     }
 
-    listen [::]:443 ssl ipv6only=on; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-}
-
-server {
-    if ($host = example.com) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-    listen         80;
-    listen         [::]:80;
-    server_name    example.com;
-    return 404; # managed by Certbot
+    # SSL Configuration (Managed by Certbot recommended)
+    listen 80;
+    listen [::]:80;
 }
 ```
 
@@ -106,11 +170,7 @@ server {
 
 ## Instructions and Notes
 
-- **Rename** config/sample.auth to .auth
-
-- **Rename** config/sample.client to .client
-
-- **Rename** config/sample.secret to .secret
+- **Rename** sample.env to .env
 
 - Visit https://dev.twitch.tv/ to register your application. 
 - On the dev.twitch.tv site, click "Your Console" in the upper right. Under "Applications" click "Register Your Application". 
@@ -118,9 +178,7 @@ server {
 - OAuth Redirect URLs. When testing locally, you can set this to http://localhost. I like to add localhost and my public domain name entry. This will allow your domain(s) access to the Twitch API. (These domains with this OAuth token and client ID are allowed to access the Twitch API)
 - Select Category > Chat Bot.
 
-- Add your Twitch client ID to the .client file.
-
-- Add your Twitch secret to the .secret file.
+- Add your Twitch client ID and Twitch secret to the .env file.
 
 These files are needed to generate your Twitch oAuth token.
 
@@ -137,57 +195,60 @@ You can get the cursor value from the first request.
   "cursor": "eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0"
 }
 ```
-Example: https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0
+Example: 
+`https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&after=eyJiIjpudWxsLCJhIjp7IkN1cnNvciI6Ik1UQXkifX0`
 will pull the next 100 follows.
 
-*Pull a single Random clip with: &random=true
+*Pull a single Random clip with: `&random=true`. Set the `count=3` value to limit how many random clips are returned. If not set, then only 1 random clip is returned.
 
-Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true
+Example: `https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&random=true&count=3`
 
 *Pull a single clip by its ID: id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
 
-Example: https://example.com/getuserclips.php?id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy
+Example: `https://example.com/getuserclips.php?id=DelightfulSuaveMacaroniNerfRedBlaster-2Z8TW9kD4d7jN_uy`
 
 *Pull only featured clips
 
-Example: https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
+Example: `https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100`
+
+*Ignore / skip newer Twitch clip URLs. `&ignore=new`
 
 
 ## End points examples:
 
-https://example.com/getuserstatus.php?channel=MrCoolStreamer
+`https://example.com/getuserstatus.php?channel=MrCoolStreamer`
 
-https://example.com/getuserinfo.php?channel=MrCoolStreamer
+`https://example.com/getuserinfo.php?channel=MrCoolStreamer`
 
-https://example.com/getstream.php?channel=MrCoolStreamer
+`https://example.com/getstream.php?channel=MrCoolStreamer`
 
-https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&ref=accesstokenxyz123&clientId=abc123xyz5678
+`https://example.com/getuserfollows.php?channel=MrCoolStreamer&limit=100&ref=accesstokenxyz123&clientId=abc123xyz5678`
 
-https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accesstokenxyz123&clientId=abc123xyz5678
+`https://example.com/getuserfollowing.php?channel=MrCoolStreamer&limit=100&ref=accesstokenxyz123&clientId=abc123xyz5678`
 
-https://example.com/getuseremotes.php?channel=MrCoolStreamer&limit=100
+`https://example.com/getuseremotes.php?channel=MrCoolStreamer&limit=100`
 
-https://example.com/getglobalemotes.php
+`https://example.com/getglobalemotes.php`
 
-https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100
+`https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100`
 
-https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&start_date=2023-02-15T00:00:00Z&end_date=2023-02-24T00:00:00Z&creator_name=MrCoolStreamer
+`https://example.com/getuserclips.php?channel=MrCoolStreamer&limit=100&start_date=2023-02-15T00:00:00Z&end_date=2023-02-24T00:00:00Z&creator_name=MrCoolStreamer`
 
-https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100
+`https://example.com/getuserclips.php?channel=MrCoolStreamer&prefer_featured=true&limit=100`
 
-https://example.com/getviewers.php?channel=MrCoolStreamer
+`https://example.com/getviewers.php?channel=MrCoolStreamer`
 
-https://example.com/getgame.php?id=23123
+`https://example.com/getgame.php?id=23123`
 
-https://example.com/getuserschedule.php?channel=MrCoolStreamer
+`https://example.com/getuserschedule.php?channel=MrCoolStreamer`
 
-https://example.com/getuserschedule.php?channel=MrCoolStreamer&ical=true - returns .ics download file that can imported into a calendar client.
+`https://example.com/getuserschedule.php?channel=MrCoolStreamer&ical=true` - returns .ics download file that can imported into a calendar client.
 
-https://example.com/getuserschedule.php?channel=MrCoolStreamer&html=true&format=0&limit=30 - returns html view (format=1 is an alternate date/time format). Event dates and times have been converted to your local time zone. This could be used as a OBS browser source or embedded as an iframe on a website.
+`https://example.com/getuserschedule.php?channel=MrCoolStreamer&html=true&format=0&limit=30` - returns html view (format=1 is an alternate date/time format). Event dates and times have been converted to your local time zone. This could be used as a OBS browser source or embedded as an iframe on a website.
 
-https://example.com/getbttvemotes.php?channel=MrCoolStreamer
+`https://example.com/getbttvemotes.php?channel=MrCoolStreamer`
 
-**Most endpoints can use 'id' instead of 'channel'. Examples: https://example.com/getuserinfo.php?id=55184769, https://example.com/getuserstatus.php?id=55184769, https://example.com/getuserschedule.php?id=55184769**
+**Most endpoints can use 'id' instead of 'channel'. Examples: `https://example.com/getuserinfo.php?id=55184769`, `https://example.com/getuserstatus.php?id=55184769`, `https://example.com/getuserschedule.php?id=55184769`**
 
 jQuery Ajax Example:
 
@@ -209,22 +270,13 @@ console.log(clips_json.data[0]['thumbnail_url']);
 JavaScript Example:
 
 ```javascript
-let getUserInfo = function (channel, callback) {
+let getUserInfo = function (channel) {
     let url = "https://example.com/getuserinfo.php?channel=" + channel;
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            callback(JSON.parse(xhr.responseText));
-            return true;
-        } else {
-            return false;
-        }
-    };
-    xhr.send();
+    return fetch(url)
+        .then(response => response.json());
 };
 
-getUserInfo("MrCoolStreamer", function (result) {
+getUserInfo("MrCoolStreamer").then(result => {
 	console.log(result);
 });
 ```

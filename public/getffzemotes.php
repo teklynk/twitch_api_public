@@ -1,81 +1,107 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$ItemsArray = array();
-$combindArr = array();
+use GuzzleHttp\Client;
+
+$client = new Client();
 
 $headers = [
-    'Authorization: Bearer ' . AUTH_TOKEN,
-    'Client-Id: ' . CLIENT_ID
+    'Authorization' => 'Bearer ' . AUTH_TOKEN,
+    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
-if (isset($_GET['channel'])) {
+$ItemsArray = [];
 
-    $ch = curl_init();
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
 
-    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $userInfo = curl_exec($ch);
-    $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $userResult = json_decode($userInfo, true);
-
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
-        //Get user frankerfacez emotes
-        curl_setopt($ch, CURLOPT_URL, "https://api.frankerfacez.com/v1/room/" . $userResult['data'][0]['login']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $userResponse = curl_exec($ch);
-
-        //Get global frankerfacez emotes
-        curl_setopt($ch, CURLOPT_URL, "https://api.frankerfacez.com/v1/set/global");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $globalResponse = curl_exec($ch);
-
-        //user frankerfacez emotes data
-        $userData = json_decode($userResponse, true);
-        $userRoomSetId = $userData['room']['set'];
-
-        //global frankerfacez emotes data
-        $globalData = json_decode($globalResponse, true);
-        $globalRoomSet = $globalData['room']['set'];
-
-        //combine all frankerfacez emotes into one array
-        $combindArr = array_merge(
-            (array)$userData['sets'][$userRoomSetId]['emoticons'],
-            (array)$globalData['sets']['3']['emoticons'],
-            (array)$globalData['sets']['1532818']['emoticons'],
-            (array)$globalData['sets']['1539687']['emoticons']
-        );
-
-        foreach ($combindArr as $data) {
-            if ($data['name'] > "") {
-                $ItemsArray[] = array(
-                    "id" => $data['id'],
-                    "code" => $data['name']
-                );
-            }
-        }
-
-        header('Content-type: application/json');
-
-        echo json_encode($ItemsArray);
-
-        curl_close($ch);
-
-    } else {
-
-        // return and empty data array/object
-        $userResponse = array(
-            "data" => []
-        );
-
-        $userResponse = json_encode($userResponse, true);
-
-        header('Content-type: application/json');
-
-        echo $userResponse;
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
     }
-
 }
 
+$cacheTTL = 86400; // 24 hours
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_ffz_emotes_' . md5($channel);
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
+if ($channel) {
+    try {
+        // Get user info
+        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
+        $response = $client->request('GET', $url, [
+            'headers' => $headers
+        ]);
+
+        $userResult = json_decode($response->getBody(), true);
+        $userStatus = $response->getStatusCode();
+
+        if ($userStatus == 200 && count($userResult['data']) > 0) {
+            // Get user FFZ emotes
+            $url = "https://api.frankerfacez.com/v1/room/id/" . $userResult['data'][0]['id'];
+            $response = $client->request('GET', $url);
+            $userData = json_decode($response->getBody(), true);
+            $userRoomSetId = $userData['room']['set'];
+
+            // Get global FFZ emotes
+            $url = "https://api.frankerfacez.com/v1/set/global";
+            $response = $client->request('GET', $url);
+            $globalData = json_decode($response->getBody(), true);
+
+            // Combine all FFZ emotes into one array
+            $combindArr = array_merge(
+                (array) $userData['sets'][$userRoomSetId]['emoticons'],
+                (array) $globalData['sets']['3']['emoticons'],
+                (array) $globalData['sets']['1532818']['emoticons'],
+                (array) $globalData['sets']['1539687']['emoticons']
+            );
+
+            foreach ($combindArr as $data) {
+                if ($data['name'] > "") {
+                    $ItemsArray[] = [
+                        "id" => $data['id'],
+                        "code" => $data['name']
+                    ];
+                }
+            }
+
+            header('Content-type: application/json');
+            echo json_encode($ItemsArray);
+        } else {
+            // Return an empty data array/object
+            $userResponse = ["data" => []];
+            header('Content-type: application/json');
+            echo json_encode($userResponse, true);
+        }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        header('Content-type: application/json');
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
+}
 ?>

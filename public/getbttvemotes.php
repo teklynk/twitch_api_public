@@ -1,80 +1,104 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
-$ItemsArray = array();
-$combindArr = array();
+use GuzzleHttp\Client;
+
+$client = new Client();
 
 $headers = [
-    'Authorization: Bearer ' . AUTH_TOKEN,
-    'Client-Id: ' . CLIENT_ID
+    'Authorization' => 'Bearer ' . AUTH_TOKEN,
+    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
 $bttvHeaders = [
-    'content-type: application/json; charset=utf-8',
-    'user-agent:"vscode-client"',
+    'Accept' => 'application/json'
 ];
 
-if (isset($_GET['channel'])) {
+$channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
 
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $_GET['channel']))));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $userInfo = curl_exec($ch);
-    $userStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $userResult = json_decode($userInfo, true);
-
-    if ($userStatus == 200 && count($userResult['data']) > 0) {
-        //Get user bttv emotes
-        curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/users/twitch/" . $userResult['data'][0]['id']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
-        $userResponse = curl_exec($ch);
-
-        //Get global bttv emotes
-        curl_setopt($ch, CURLOPT_URL, "https://api.betterttv.net/3/cached/emotes/global");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $bttvHeaders);
-        $globalResponse = curl_exec($ch);
-
-        //user bttvemotes data
-        $userData = json_decode($userResponse, true);
-
-        //global bttvemotes data
-        $globalData = json_decode($globalResponse, true);
-
-        //combine all bttvemotes into one array
-        $combindArr = array_merge((array)$userData['channelEmotes'], (array)$userData['sharedEmotes'], (array)$globalData);
-
-        foreach ($combindArr as $data) {
-            if ($data['code'] > "") {
-                $ItemsArray[] = array(
-                    "id" => $data['id'],
-                    "code" => $data['code']
-                );
-            }
-        }
-
-        header('Content-type: application/json');
-
-        echo json_encode($ItemsArray);
-
-        curl_close($ch);
-
-    } else {
-
-        // return and empty data array/object
-        $userResponse = array(
-            "data" => []
-        );
-
-        $userResponse = json_encode($userResponse, true);
-
-        header('Content-type: application/json');
-
-        echo $userResponse;
+foreach ($ignoreKeywords as $keyword) {
+    if (preg_match("/$keyword/", $channel)) {
+        $channel = null;
+        break;
     }
+}
 
+$cacheTTL = 86400; // 24 hours
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_bttv_emotes_' . md5($channel);
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
+if ($channel) {
+    try {
+        // Get user info
+        $url = "https://api.twitch.tv/helix/users?login=" . trim(strtolower(str_replace('@', '', $channel)));
+        $response = $client->request('GET', $url, [
+            'headers' => $headers
+        ]);
+
+        $userResult = json_decode($response->getBody(), true);
+        $userStatus = $response->getStatusCode();
+
+        if ($userStatus == 200 && count($userResult['data']) > 0) {
+            // Get user BTTV emotes
+            $url = "https://api.betterttv.net/3/cached/users/twitch/" . $userResult['data'][0]['id'];
+            $response = $client->request('GET', $url, [
+                'headers' => $bttvHeaders
+            ]);
+            $userData = json_decode($response->getBody(), true);
+
+            // Get global BTTV emotes
+            $url = "https://api.betterttv.net/3/cached/emotes/global";
+            $response = $client->request('GET', $url, [
+                'headers' => $bttvHeaders
+            ]);
+            $globalData = json_decode($response->getBody(), true);
+
+            // Combine all BTTV emotes into one array
+            $combindArr = array_merge((array) $userData['channelEmotes'], (array) $userData['sharedEmotes'], (array) $globalData);
+
+            foreach ($combindArr as $data) {
+                if ($data['code'] > "") {
+                    // Process each emote data
+                }
+            }
+
+            header('Content-type: application/json');
+            echo json_encode($combindArr);
+        } else {
+            // Return an empty data array/object
+            $userResponse = ["data" => []];
+            header('Content-type: application/json');
+            echo json_encode($userResponse, true);
+        }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        header('Content-type: application/json');
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }
 ?>

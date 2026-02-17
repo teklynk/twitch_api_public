@@ -1,42 +1,115 @@
 <?php
 require_once(__DIR__ . '/../config/config.php');
 
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+$itemsArray = [];
+
 $headers = [
-    'Authorization: Bearer ' . AUTH_TOKEN,
-    'Client-Id: ' . CLIENT_ID
+    'Authorization' => 'Bearer ' . AUTH_TOKEN,
+    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
+
+$cacheTTL = 86400; // 24 hours
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_game_' . md5(json_encode([$_GET['id'] ?? '', $_GET['name'] ?? '']));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
 
 if (isset($_GET['id']) || isset($_GET['name'])) {
 
-    $ch = curl_init();
-    
-    if (!empty($_GET['id'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?id=" . trim($_GET['id'])); 
-    } elseif (!empty($_GET['name'])) {
-        curl_setopt($ch, CURLOPT_URL, "https://api.twitch.tv/helix/games?name=" . trim(rawurlencode($_GET['name'])));
+    try {
+        if (!empty($_GET['id'])) {
+            $url = "https://api.twitch.tv/helix/games?id=" . trim($_GET['id']);
+        } elseif (!empty($_GET['name'])) {
+            $url = "https://api.twitch.tv/helix/games?name=" . trim(rawurlencode($_GET['name']));
+        }
+
+        // Perform the request
+        $response = $client->request('GET', $url, [
+            'headers' => $headers, // Pass your headers here
+        ]);
+
+        // Get the response body and status code
+        $userData = json_decode($response->getBody(), true);
+        $userStatus = $response->getStatusCode();
+
+        foreach ($userData['data'] as $data) {
+            // Use the box_art_url to create the scaled "usable" box art image
+            $box_art_url = $data['box_art_url'];
+            // define size
+            $width = 285;
+            $height = 380;
+            // Replace box_art_url
+            $box_art_scaled = str_replace(
+                ['{width}', '{height}'],
+                [$width, $height],
+                $box_art_url
+            );
+
+            $itemsArray[] = [
+                "id" => $data['id'],
+                "name" => $data['name'],
+                "box_art_url" => $data['box_art_url'],
+                "igdb_id" => $data['igdb_id'],
+                "box_art_url_scaled" => $box_art_scaled,
+            ];
+        }
+
+        $dataArray = [
+            "data" => $itemsArray
+        ];
+
+        header('Content-type: application/json');
+        echo json_encode($dataArray);
+
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        // Handle request errors
+        header('Content-type: application/json');
+        echo json_encode([
+            'error' => 'Request failed',
+            'message' => $e->getMessage()
+        ]);
+    } catch (Exception $e) {
+        // Handle general errors
+        header('Content-type: application/json');
+        echo json_encode([
+            'error' => 'Bad Request',
+            'message' => $e->getMessage()
+        ]);
     }
-    
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $userInfo = curl_exec($ch);
-
-    header('Content-type: application/json');
-
-    echo $userInfo;
-
-    curl_close($ch);
-
 } else {
-        
-    // return and empty data array/object
-    $userResponse = array(
+    // return an empty data array/object
+    $dataArray = [
         "data" => []
-    );
-
-    $userResponse = json_encode($userResponse, true);
+    ];
 
     header('Content-type: application/json');
-
-    echo $userResponse;
+    echo json_encode($dataArray);
 }
-?>
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
+}
