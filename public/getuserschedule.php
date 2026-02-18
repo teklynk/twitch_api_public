@@ -23,6 +23,37 @@ foreach ($ignoreKeywords as $keyword) {
     }
 }
 
+$cacheTTL = 300; // 5 minutes
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_user_schedule_' . md5(json_encode([$channel, $_GET['id'] ?? '', $ical, $html]));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    if ($ical) {
+        header('Content-type: text/calendar');
+    } elseif ($html) {
+        header('Content-type: text/html');
+    } else {
+        header('Content-type: application/json');
+    }
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
 if ($channel || isset($_GET['id'])) {
     try {
         
@@ -90,6 +121,11 @@ if ($channel || isset($_GET['id'])) {
     $userResponse = ["data" => []];
     header('Content-type: application/json');
     echo json_encode($userResponse, true);
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }
 
 function generateICal($items)

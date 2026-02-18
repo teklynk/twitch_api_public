@@ -5,11 +5,6 @@ use GuzzleHttp\Client;
 
 $client = new Client();
 
-$headers = [
-    'Authorization' => 'Bearer ' . AUTH_TOKEN,
-    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
-];
-
 $channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
 
 foreach ($ignoreKeywords as $keyword) {
@@ -18,6 +13,36 @@ foreach ($ignoreKeywords as $keyword) {
         break;
     }
 }
+
+$cacheTTL = 300; // 5 minutes
+
+$cached = null;
+$mem = null;
+if (class_exists('Memcached')) {
+    $mem = new Memcached();
+    if (gethostbyname('memcached') !== 'memcached') {
+        $mem->addServer("memcached", 11211);
+    } else {
+        $mem->addServer("127.0.0.1", 11211);
+    }
+    $cacheKey = 'twitch_user_status_' . md5(json_encode([$channel, $_GET['id'] ?? '']));
+    $cached = $mem->get($cacheKey);
+}
+
+if ($cached) {
+    header('Content-type: application/json');
+    echo $cached;
+    exit;
+}
+
+if ($mem) {
+    ob_start();
+}
+
+$headers = [
+    'Authorization' => 'Bearer ' . AUTH_TOKEN,
+    'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
+];
 
 if ($channel || isset($_GET['id'])) {
 
@@ -60,4 +85,9 @@ if ($channel || isset($_GET['id'])) {
     $userResponse = ["data" => []];
     header('Content-type: application/json');
     echo json_encode($userResponse, true);
+}
+
+if ($mem) {
+    $output = ob_get_flush();
+    $mem->set($cacheKey, $output, $cacheTTL);
 }
