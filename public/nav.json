@@ -1,54 +1,22 @@
 [
   {
     "name": "Twitch Shout-Out",
-    "url": "https://twitch-shoutout.pages.dev"
+    "url": "https://twitchshoutout.com"
+  },
+  {
+    "name": "Twitch Clips Player",
+    "url": "https://twitchclipsplayer.com"
   },
   {
     "name": "Twitch Emote Wall Overlay",
     "url": "https://twitch-chat-emotes.pages.dev"
   },
   {
-    "name": "Twitch Clips Reel Player",
-    "url": "https://twitch-clips-player.pages.dev"
-  },
-  {
-    "name": "Twitch Emote Effects Overlay",
-    "url": "https://twitch-emote-effects.pages.dev"
-  },
-  {
-    "name": "Twitch Chat-NES",
-    "url": "https://twitch-chat-nes.teklynk.com"
-  },
-  {
-    "name": "Twitch Chat Highlight",
-    "url": "https://twitch-chat-highlight.teklynk.com"
-  },
-  {
     "name": "Twitch Fart Bot",
     "url": "https://twitch-fart-bot.teklynk.com"
   },
   {
-    "name": "Twitch Alerts Overlay System",
-    "url": "https://github.com/teklynk/twitch_chat_alerts"
-  },
-  {
-    "name": "Twitch Queue",
-    "url": "https://twitch-queue.pages.dev"
-  },
-  {
-    "name": "Twitch Animated Bot Overlay",
-    "url": "https://github.com/teklynk/twitch_chatbot_overlay"
-  },
-  {
-    "name": "Twitch Chat Auto-Ban Bot",
-    "url": "https://chat-ban-bot.pages.dev"
-  },
-  {
-    "name": "Twitch Chat Relay",
-    "url": "https://twitch-chat-forwarder.teklynk.com"
-  },
-  {
-    "name": "Twitch Playlist Overlay",
-    "url": "https://github.com/teklynk/twitch_playlist_overlay"
+    "name": "More Projects...",
+    "url": "https://github.com/teklynk?tab=repositories"
   }
 ]
