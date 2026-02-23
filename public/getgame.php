@@ -12,7 +12,7 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
-$cacheTTL = 86400; // 24 hours
+$cacheTTL = 43200; // 12 hours
 
 $cached = null;
 $mem = null;

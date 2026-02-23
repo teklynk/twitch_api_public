@@ -30,6 +30,6 @@
     <li>Create file `.auth` inside the `config` directory. Example: `config/.auth`. Make sure that the `.auth` file has write permissions.</li>
     <li>docker-compose build</li>
     <li>docker-compose up -d</li>
-    <li>The `docker-compose.yml` will create 3 containers (php-fpm, composer, nginx)</li>
+    <li>The `docker-compose.yml` will create 4 containers (php-fpm, composer, nginx, memcached)</li>
     <li>You should now be able to access the application by visiting http://localhost:8080 in your web browser.</li>
 </ol>

@@ -19,7 +19,7 @@ foreach ($ignoreKeywords as $keyword) {
     }
 }
 
-$cacheTTL = 86400; // 24 hours
+$cacheTTL = 43200; // 12 hours
 
 $cached = null;
 $mem = null;
