@@ -21,7 +21,7 @@ foreach ($ignoreKeywords as $keyword) {
 
 $ItemsArray = [];
 
-$cacheTTL = 43200; // 12 hours
+$cacheTTL = 3600; // 1 hour
 
 $cached = null;
 $mem = null;
