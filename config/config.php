@@ -85,7 +85,7 @@ if ($apiKey) {
     }
 }
 
-$current_token = @file_get_contents($authFile);
+$current_token = trim((string)@file_get_contents($authFile));
 $token_valid = true;
 
 // Validate token if it exists and is not expired by date
@@ -101,6 +101,7 @@ if (!empty($current_token) && strtotime($date_now) <= strtotime($authFileModDate
             $token_valid = false;
         }
     } catch (\Exception $e) {
+        $token_valid = false;
     }
 }
 
