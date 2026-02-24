@@ -85,8 +85,27 @@ if ($apiKey) {
     }
 }
 
+$current_token = @file_get_contents($authFile);
+$token_valid = true;
+
+// Validate token if it exists and is not expired by date
+if (!empty($current_token) && strtotime($date_now) <= strtotime($authFileModDate)) {
+    try {
+        $valClient = new Client();
+        $valResponse = $valClient->request('GET', 'https://id.twitch.tv/oauth2/validate', [
+            'headers' => ['Authorization' => 'OAuth ' . $current_token],
+            'http_errors' => false
+        ]);
+
+        if ($valResponse->getStatusCode() != 200) {
+            $token_valid = false;
+        }
+    } catch (\Exception $e) {
+    }
+}
+
 // Refresh oAuth Token automatically
-if (strtotime($date_now) > strtotime($authFileModDate) || file_get_contents($authFile) == '') {
+if (!$token_valid || strtotime($date_now) > strtotime($authFileModDate) || empty($current_token)) {
     $client = new Client();
     $url = "https://id.twitch.tv/oauth2/token";
     $params = [
