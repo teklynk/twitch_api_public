@@ -1,5 +1,5 @@
 # Use the official PHP image with PHP-FPM
-FROM php:7.4-fpm
+FROM php:8.3-fpm
 
 # Install necessary PHP extensions and tools
 RUN apt-get update && apt-get install -y \

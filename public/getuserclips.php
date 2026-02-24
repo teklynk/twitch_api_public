@@ -30,7 +30,7 @@ foreach ($ignoreKeywords as $keyword) {
 }
 
 // Cache TTL in seconds. Twitch Clip URLs expire after about 1 hour
-$cacheTTL = 43200; // 12 hours
+$cacheTTL = 3600; // 1 hour
 
 $cached = null;
 $mem = null;
