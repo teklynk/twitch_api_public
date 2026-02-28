@@ -1,7 +1,7 @@
 <?php
-error_reporting(E_ALL & ~E_WARNING);
-
-ini_set('display_errors', 0);
+// For development, show all errors.
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 
 define('logsPath', __DIR__ . "/../logs");
 

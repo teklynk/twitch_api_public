@@ -3,6 +3,7 @@ version: '3.8'
 services:
   php-fpm:
     build: .
+    user: "${UID:-1000}:${GID:-1000}"
     environment:
       API_TWITCH_CLIENT_ID: ${API_TWITCH_CLIENT_ID}
       API_TWITCH_SECRET: ${API_TWITCH_SECRET}
@@ -10,8 +11,10 @@ services:
     volumes:
       - .:/var/www/html
     depends_on:
-      - composer
-      - memcached
+      composer:
+        condition: service_completed_successfully
+      memcached:
+        condition: service_started
 
   composer:
     image: composer:latest
