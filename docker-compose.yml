@@ -10,18 +10,10 @@ services:
       API_KEY: ${API_KEY}
     volumes:
       - .:/var/www/html
+    command: sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader && exec php-fpm"
     depends_on:
-      composer:
-        condition: service_completed_successfully
       memcached:
         condition: service_started
-
-  composer:
-    image: composer:latest
-    volumes:
-      - .:/var/www/html
-    working_dir: /var/www/html
-    command: ["composer", "install", "--no-interaction", "--prefer-dist", "--optimize-autoloader"]
 
   nginx:
     image: nginx:latest

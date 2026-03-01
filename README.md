@@ -48,17 +48,16 @@ This branch includes a `Dockerfile` and `docker-compose.yml` to easily run the a
     The API should now be accessible at `http://localhost:8080` (or your server's IP).
 
 **Docker Notes:**
-- **Memcached:** If using Docker, ensure `getuserclips.php` is configured to connect to the `memcached` container host instead of `127.0.0.1`.
 - **Stopping:** To stop the containers, run `docker-compose down`.
 
-### Option 2: Manual Installation (Bare Metal)
+### Option 2: Manual Installation
 
 If you prefer not to use Docker, you can run this on a standard LAMP/LEMP stack.
 
 #### 1. Prerequisites
 - Linux server (Ubuntu/Debian recommended)
 - Nginx or Apache
-- PHP 8.1+ (with cURL, XML, mbstring extensions)
+- PHP 8.1+
 - Composer
 - Memcached
 
@@ -133,7 +132,6 @@ server {
       fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
     }
 
-    # SSL Configuration (Managed by Certbot recommended)
     listen 80;
     listen [::]:80;
 }
@@ -141,7 +139,7 @@ server {
 
 ## APACHE Config Example
 ```apache
-<VirtualHost *:443>
+<VirtualHost *:80>
    DocumentRoot /var/www/html/twitch_api_public/public
    ServerName example.com;
 
@@ -161,23 +159,16 @@ server {
         RewriteRule ^[^.]+$ index.php [L]
    </Directory>
    
-   SSLEngine on
-
-   SSLCertificateFile /etc/apache2/certificate/apache2.crt
-   SSLCertificateKeyFile /etc/apache2/certificate/private.key
 </VirtualHost>
 ```
 
 ## Instructions and Notes
-
-- **Rename** sample.env to .env
 
 - Visit https://dev.twitch.tv/ to register your application. 
 - On the dev.twitch.tv site, click "Your Console" in the upper right. Under "Applications" click "Register Your Application". 
 - Give your Application a Name.
 - OAuth Redirect URLs. When testing locally, you can set this to http://localhost. I like to add localhost and my public domain name entry. This will allow your domain(s) access to the Twitch API. (These domains with this OAuth token and client ID are allowed to access the Twitch API)
 - Select Category > Chat Bot.
-
 - Add your Twitch client ID and Twitch secret to the .env file.
 
 These files are needed to generate your Twitch oAuth token.
@@ -325,73 +316,26 @@ getuserclips.php
 {
   "data": [
     {
-      "item": 22,
-      "id": "VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
-      "url": "https://clips.twitch.tv/VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
-      "embed_url": "https://clips.twitch.tv/embed?clip=VictoriousAwkwardPheasantKevinTurtle-xT8tH7fW0oU0vZ8gT4",
-      "broadcaster_id": "159805577",
-      "broadcaster_name": "Teklynk",
-      "creator_id": "141981764",
-      "creator_name": "MrCoolStreamer",
+      "item": 1,
+      "id": "CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4",
+      "url": "https://www.twitch.tv/twitch/clip/CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4",
+      "embed_url": "https://clips.twitch.tv/embed?clip=CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4",
+      "broadcaster_id": "12826",
+      "broadcaster_name": "Twitch",
+      "creator_id": "932351392",
+      "creator_name": "power_tester",
       "video_id": "",
-      "game_id": "509670",
+      "game_id": "",
       "language": "en",
-      "title": "I don't know what is happening",
-      "view_count": 1,
-      "created_at": "2022-08-08T17:33:04Z",
-      "thumbnail_url": "https://clips-media-assets2.twitch.tv/_tduXpTTRFVsBuTb_XYZABC/vod-1543945678-offset-4866-preview-480x272.jpg",
-      "duration": 30,
+      "title": "F1 2017 E3 Gameplay!",
+      "view_count": 4181052,
+      "created_at": "2023-07-12T01:07:36Z",
+      "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-clips/ErNyUZz5SyhsRkXAY9-3uA/AT-cm%7CErNyUZz5SyhsRkXAY9-3uA-preview-480x272.jpg",
+      "duration": 59.9,
       "vod_offset": null,
-      "clip_url": "https://clips-media-assets2.twitch.tv/_tduXpTTRFVsBuTb_XYZABC/vod-1543945678-offset-4866.mp4"
+      "is_featured": false,
+      "clip_url": "https://production.assets.clips.twitchcdn.net/ErNyUZz5SyhsRkXAY9-3uA/AT-cm%7CErNyUZz5SyhsRkXAY9-3uA.mp4?sig=8f18716f777aa3f0061754dadeae7cb85c50bf21&token=%7B%22authorization%22%3A%7B%22forbidden%22%3Afalse%2C%22reason%22%3A%22%22%7D%2C%22clip_uri%22%3A%22https%3A%2F%2Fproduction.assets.clips.twitchcdn.net%2FErNyUZz5SyhsRkXAY9-3uA%2FAT-cm%257CErNyUZz5SyhsRkXAY9-3uA.mp4%22%2C%22clip_slug%22%3A%22CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4%22%2C%22device_id%22%3Anull%2C%22expires%22%3A1772459550%2C%22user_id%22%3A%22%22%2C%22version%22%3A3%7D"
     }
   ]
 }
 ```
-
-## BetterTTV Emotes
-getbttvemotes.php
-```json
-[
-  {
-    "id": "636ff60fb9076d0aaebbcf7c",
-    "code": "Tekbot"
-  },
-  {
-    "id": "5ba6d5ba6ee0c23989d52b10",
-    "code": "bongoTap"
-  },
-  {
-    "id": "5a6edb51f730010d194bdd46",
-    "code": "PepoDance"
-  },
-  {
-    "id": "5d922afbc0652668c9e52ead",
-    "code": "peepoArrive"
-  },
-  {
-    "id": "59f06613ba7cdd47e9a4cad2",
-    "code": "PartyParrot"
-  },
-  {
-    "id": "5c3427a55752683d16e409d1",
-    "code": "peepoPooPoo"
-  },
-  {
-    "id": "5bc7ff14664a3b079648dd66",
-    "code": "peepoRun"
-  },
-  {
-    "id": "5df2d1b7e7df1277b6070b1e",
-    "code": "pepeJAM"
-  },
-  {
-    "id": "5f21e57a65fe924464eecf0e",
-    "code": "catRAVE"
-  },
-  {
-    "id": "54fa8f1401e468494b85b537",
-    "code": ":tf:"
-  }
-]
-```
-BTTV Emote URL: https://cdn.betterttv.net/emote/5a970ab2122e4331029f0d7e/3x
