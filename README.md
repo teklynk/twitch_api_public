@@ -48,15 +48,9 @@ If you prefer not to use Docker, you can run this on a standard LAMP/LEMP stack.
 
 #### 2. Install Dependencies (Ubuntu Example)
 
-**Install PHP and Extensions:**
 ```bash
 sudo apt update
-sudo apt install -y nginx php-fpm php-curl php-xml php-mbstring
-```
-
-**Install Memcached:**
-```bash
-sudo apt install -y memcached php-memcached libmemcached-dev
+sudo apt install -y nginx php-fpm php-curl php-xml php-mbstring memcached php-memcached unzip git
 sudo service memcached start
 ```
 
@@ -72,7 +66,7 @@ rm composer-setup.php
 1.  **Clone the repository:**
     ```bash
     cd /var/www/html
-    git clone <repository-url>
+    git clone https://github.com/teklynk/twitch_api_public.git
     cd twitch_api_public
     ```
 
@@ -89,7 +83,7 @@ rm composer-setup.php
 
 #### 4. Web Server Configuration
 
-Set the web site's root directory in the nginx/apache config to `/var/www/html/twitch_api_public/public`.
+Set the web site's root directory in the nginx config to `/var/www/html/twitch_api_public/public`.
 
 **NGINX Config Example:**
 ```nginx
