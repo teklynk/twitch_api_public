@@ -3,6 +3,10 @@
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
+// Suppress Deprecated warnings and prevent errors from being displayed to the user
+error_reporting(E_ALL & ~E_DEPRECATED);
+ini_set('display_errors', 0);
+
 define('logsPath', __DIR__ . "/../logs");
 
 $authFile = __DIR__ . '/.auth';
