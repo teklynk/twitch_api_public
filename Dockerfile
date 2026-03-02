@@ -6,12 +6,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     git \
-    sqlite3 \
     libmemcached-dev \
     zlib1g-dev \
     && pecl install memcached \
-    && docker-php-ext-enable memcached \
-    && docker-php-ext-install pdo pdo_mysql
+    && docker-php-ext-enable memcached
 
 # Install Composer
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
