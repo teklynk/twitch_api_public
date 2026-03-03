@@ -128,6 +128,21 @@ server {
 
 These files are needed to generate your Twitch oAuth token.
 
+You can also manually get an auth token using this cURL command.
+
+```bash
+curl -X POST "https://id.twitch.tv/oauth2/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "grant_type=client_credentials"
+```
+
+This will generate:
+```bash
+{"access_token":"dC3aH3uJ5yA7cT7lK1zD6kU6eXaMpLe","expires_in":5364160,"token_type":"bearer"}
+```
+
 ## Getting data
 
 Requests are returned in JSON format so that you can parse the data as needed. Some requests require a limit parameter in the url and have a max limit of 100.

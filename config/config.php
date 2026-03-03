@@ -11,10 +11,6 @@ define('logsPath', __DIR__ . "/../logs");
 
 $authFile = __DIR__ . '/.auth';
 
-$authFileModDate = date('Y-m-d', filemtime($authFile));
-$date_now = date('Y-m-d');
-$authtoken = '';
-
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 // Instantiate DotEnv
@@ -90,10 +86,10 @@ if ($apiKey) {
 }
 
 $current_token = trim((string)@file_get_contents($authFile));
-$token_valid = true;
+$token_valid = false;
 
-// Validate token if it exists and is not expired by date
-if (!empty($current_token) && strtotime($date_now) <= strtotime($authFileModDate)) {
+// If a token exists and is not older than 60 days, validate it.
+if (!empty($current_token) && file_exists($authFile) && filemtime($authFile) > (time() - 5184000)) { // 5184000 seconds = 60 days
     try {
         $valClient = new Client();
         $valResponse = $valClient->request('GET', 'https://id.twitch.tv/oauth2/validate', [
@@ -101,16 +97,16 @@ if (!empty($current_token) && strtotime($date_now) <= strtotime($authFileModDate
             'http_errors' => false
         ]);
 
-        if ($valResponse->getStatusCode() != 200) {
-            $token_valid = false;
+        if ($valResponse->getStatusCode() == 200) {
+            $token_valid = true;
         }
     } catch (\Exception $e) {
-        $token_valid = false;
+        // if validation fails, $token_valid remains false and a new token will be fetched.
     }
 }
 
 // Refresh oAuth Token automatically
-if (!$token_valid || strtotime($date_now) > strtotime($authFileModDate) || empty($current_token)) {
+if (!$token_valid) {
     $client = new Client();
     $url = "https://id.twitch.tv/oauth2/token";
     $params = [
