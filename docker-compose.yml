@@ -4,10 +4,6 @@ services:
   php-fpm:
     build: .
     user: "${UID:-1000}:${GID:-1000}"
-    environment:
-      API_TWITCH_CLIENT_ID: ${API_TWITCH_CLIENT_ID}
-      API_TWITCH_SECRET: ${API_TWITCH_SECRET}
-      API_KEY: ${API_KEY}
     volumes:
       - .:/var/www/html
     command: sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader && exec php-fpm"
