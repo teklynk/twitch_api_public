@@ -1,43 +1,36 @@
 <?php
-// For development, show all errors.
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+
+require_once(__DIR__ . '/../vendor/autoload.php');
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use GuzzleHttp\Client;
+use Dotenv\Dotenv;
 
 // Suppress Deprecated warnings and prevent errors from being displayed to the user
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('display_errors', 0);
 
+// Constants and Global Variables
 define('logsPath', __DIR__ . "/../logs");
+define('TWITCH_GRAPHQL_URL', 'https://gql.twitch.tv/gql');
+define('TWITCH_CLIENT_ID', 'kimne78kx3ncx6brgo4mv6wki5h1ko');
+define('TWITCH_SHA256HASH', '4f35f1ac933d76b1da008c806cd5546a7534dfaff83e033a422a81f24e5991b3');
 
 $authFile = __DIR__ . '/.auth';
-
-require_once(__DIR__ . '/../vendor/autoload.php');
+$ignoreKeywords = array("http", "https", "twitch.tv");
 
 // Instantiate DotEnv
-$dotenv = new Dotenv\Dotenv(__DIR__ . '/../', '.env');
+$dotenv = new Dotenv(__DIR__ . '/../', '.env');
 $dotenv->load();
-
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-use GuzzleHttp\Client;
 
 //Instantiate MonoLog as $logger
 $logger = new Logger('Monolog');
 try {
     $logger->pushHandler(new StreamHandler(logsPath . "/monolog.log", Logger::NOTICE));
 } catch (Exception $e) {
+    // Handle exception
 }
-//Example usage
-// Monolog - create a log channel
-//$logger = new Logger('Monolog');
-//$logger->pushHandler(new StreamHandler(logsPath . 'monolog2.log', Logger::NOTICE));
-
-// Use it like this in your code:
-//$logger->warning('Foo');
-//$logger->error('Bar');
-//$logger->notice('Test');
-//$logger->notice('FAILED Login - ' . $user_name . ' - ' . getRealIpAddr());
 
 //Gets clients real IP address - for logging and IP restriction
 function getRealIpAddr()
@@ -59,29 +52,43 @@ function getRealIpAddr()
 }
 
 // If using an IP allow list, check for it
-$apiIPAllow = getenv('API_IP_ALLOW') > '' ? true : false;
+$apiIPAllow = getenv('API_IP_ALLOW');
 
 if ($apiIPAllow) {
     $ip = getRealIpAddr();
     $allowedIPs = explode(',', getenv('API_IP_ALLOW'));
 
     if (!in_array($ip, $allowedIPs)) {
-        header('Content-type: application/json');
-        echo json_encode(['error' => 'Invalid IP Address']);
-        exit();
+        header('HTTP/1.1 403 Unauthorized');
+        http_response_code(403);
+        die();
     }
 }
 
 // If using an API key, check for it. Make sure X-Api-Key is set in the request headers
-$apiKey = getenv('API_KEY') > '' ? true : false;
+$apiKey = getenv('API_KEY');
 
 if ($apiKey) {
     $http_headers = getallheaders();
 
     if (!isset($http_headers['X-Api-Key']) || $http_headers['X-Api-Key'] != $apiKey) {
-        header('Content-type: application/json');
-        echo json_encode(['error' => 'Invalid or missing API Key']);
-        exit();
+        header('HTTP/1.1 403 Unauthorized');
+        http_response_code(403);
+        die();
+    }
+}
+
+// If set, the API will only allow requests from the `API_ALLOWED_DOMAINS` list in the .env file.
+$allowedDomainsEnv = getenv('API_ALLOWED_DOMAINS');
+
+if ($allowedDomainsEnv) {
+    $referrerDomain = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_HOST);
+    $allowedDomains = explode(',', $allowedDomainsEnv);
+
+    if (!in_array($referrerDomain, $allowedDomains)) {
+        header('HTTP/1.1 403 Unauthorized');
+        http_response_code(403);
+        die();
     }
 }
 
@@ -139,13 +146,6 @@ if (!$token_valid) {
     }
 }
 
-$ignoreKeywords = array("http", "https", "twitch.tv");
-
+// Define AUTH_TOKEN after potential refresh
 $authtoken = file_get_contents($authFile);
-
 define('AUTH_TOKEN', trim($authtoken));
-
-// Only change these if you know what you're doing
-define('TWITCH_GRAPHQL_URL', 'https://gql.twitch.tv/gql');
-define('TWITCH_CLIENT_ID', 'kimne78kx3ncx6brgo4mv6wki5h1ko');
-define('TWITCH_SHA256HASH', '4f35f1ac933d76b1da008c806cd5546a7534dfaff83e033a422a81f24e5991b3');
