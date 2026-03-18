@@ -36,18 +36,20 @@ try {
 function getRealIpAddr()
 {
     global $clientip;
-    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+    if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $clientip = filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP);
+    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $clientip = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP);
+    } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
         $clientip = filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP);
     } elseif (isset($_SERVER['REMOTE_ADDR'])) {
         $clientip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
-    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $clientip = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP);
-    } elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-        $clientip = filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP);
-    } elseif (filter_var($clientip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || filter_var($clientip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+    }
+    
+    // If nothing valid was found
+    if (!$clientip || !filter_var($clientip, FILTER_VALIDATE_IP)) {
         $clientip = "Client IP Not Found";
     }
-
     return $clientip;
 }
 
