@@ -10,6 +10,8 @@ $headers = [
     'Client-Id' => getenv('API_TWITCH_CLIENT_ID')
 ];
 
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
 $random = isset($_GET['random']) ? $_GET['random'] : 'false';
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
@@ -127,38 +129,6 @@ if ($channel) {
                     }
 
                     if ($inc_data) {
-      
-                        $body = json_encode([
-                            [
-                                "operationName" => "VideoAccessToken_Clip",
-                                "variables" => [
-                                    "platform" => "web",
-                                    "slug" => $data['id']
-                                ],
-                                "extensions" => [
-                                    "persistedQuery" => [
-                                        "version" => 1,
-                                        "sha256Hash" => TWITCH_SHA256HASH
-                                    ]
-                                ]
-                            ]
-                        ]);
-
-                        $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
-                            'headers' => [
-                                'Content-Type' => 'application/json',
-                                'Client-ID' => TWITCH_CLIENT_ID
-                            ],
-                            'body' => $body
-                        ]);
-
-                        $clipsArray = json_decode($response->getBody(), true);
-
-                        $clipsSignature = $clipsArray[0]['data']['clip']['playbackAccessToken']['signature'];
-                        $clipsToken = urlencode($clipsArray[0]['data']['clip']['playbackAccessToken']['value']);
-                        $clipsVideoSource = $clipsArray[0]['data']['clip']['videoQualities'][0]['sourceURL'];
-
-                        $clipUrl = $clipsVideoSource . '?sig=' . $clipsSignature . '&token=' . $clipsToken;
 
                         $itemCount++;
 
@@ -181,7 +151,7 @@ if ($channel) {
                             "duration" => $data['duration'],
                             "vod_offset" => $data['vod_offset'],
                             "is_featured" => $data['is_featured'],
-                            "clip_url" => $clipUrl
+                            "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id']
                         ];
                     }
                 }
@@ -270,30 +240,6 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
         foreach ($userData['data'] as $data) {
 
-            $body = json_encode([
-                [
-                    "operationName" => "VideoAccessToken_Clip",
-                    "variables" => ["platform" => "web", "slug" => $data['id']],
-                    "extensions" => ["persistedQuery" => ["version" => 1, "sha256Hash" => TWITCH_SHA256HASH]]
-                ]
-            ]);
-
-            $response = $client->request('POST', TWITCH_GRAPHQL_URL, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Client-ID' => TWITCH_CLIENT_ID
-                ],
-                'body' => $body
-            ]);
-
-            $clips_array = json_decode($response->getBody(), true);
-
-            $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
-            $clips_token = urlencode($clips_array[0]['data']['clip']['playbackAccessToken']['value']);
-            $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
-
-            $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
-
             $itemCount++;
 
             $itemsArray[] = [
@@ -315,7 +261,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 "duration" => $data['duration'],
                 "vod_offset" => $data['vod_offset'],
                 "is_featured" => $data['is_featured'],
-                "clip_url" => $clip_url
+                "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id']
             ];
         }
 

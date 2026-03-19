@@ -32,7 +32,7 @@ Result example :
       "duration": 59.9,
       "vod_offset": 228,
       "is_featured": false,
-      "clip_url": "https://production.assets.clips.twitchcdn.net/ErNyUZz5SyhsRkXAY9-3uA/AT-cm%7CErNyUZz5SyhsRkXAY9-3uA.mp4?sig=2a30ffed3c2dad4306781cdae33e2c552614d5f6&token=%7B%22authorization%22%3A%7B%22forbidden%22%3Afalse%2C%22reason%22%3A%22%22%7D%2C%22clip_uri%22%3A%22https%3A%2F%2Fproduction.assets.clips.twitchcdn.net%2FErNyUZz5SyhsRkXAY9-3uA%2FAT-cm%257CErNyUZz5SyhsRkXAY9-3uA.mp4%22%2C%22clip_slug%22%3A%22CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4%22%2C%22device_id%22%3Anull%2C%22expires%22%3A1743460717%2C%22user_id%22%3A%22%22%2C%22version%22%3A2%7D"
+      "clip_url": "http://localhost:8080/getclipurl.php?id=CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4"
     },
     {
       "item": 2,
@@ -53,7 +53,7 @@ Result example :
       "duration": 12.8,
       "vod_offset": 2202,
       "is_featured": false,
-      "clip_url": "https://production.assets.clips.twitchcdn.net/92BS8IYxW14_mvPlr8jdMw/AT-cm%7C92BS8IYxW14_mvPlr8jdMw.mp4?sig=90622ecfcefc1b65585b776691b547d22badfda8&token=%7B%22authorization%22%3A%7B%22forbidden%22%3Afalse%2C%22reason%22%3A%22%22%7D%2C%22clip_uri%22%3A%22https%3A%2F%2Fproduction.assets.clips.twitchcdn.net%2F92BS8IYxW14_mvPlr8jdMw%2FAT-cm%257C92BS8IYxW14_mvPlr8jdMw.mp4%22%2C%22clip_slug%22%3A%22VastOutstandingMinkNononoCat-hjFbXj-a8-WvyN0z%22%2C%22device_id%22%3Anull%2C%22expires%22%3A1743460717%2C%22user_id%22%3A%22%22%2C%22version%22%3A2%7D"
+      "clip_url": "http://localhost:8080/getclipurl.php?id=VastOutstandingMinkNononoCat-hjFbXj-a8-WvyN0z"
     }
   ]
 }

@@ -26,7 +26,6 @@
 <div class="left-menu">
     <div class="content-logo">
         <div class="logo">
-            <img src="images/robot.gif" height="50" />
             <span>API Documentation</span>
         </div>
         <button class="burger-menu-icon" id="button-menu-mobile">
