@@ -11,6 +11,7 @@ $headers = [
 ];
 
 $id = isset($_GET['id']) ? $_GET['id'] : '';
+$url = isset($_GET['url']) ? $_GET['url'] : 'true';
 
 // Get clip url by its ID and return it as a Content-Type: video/mp4
 // https://example.com/getclipurl.php?id=LaconicCulturedPieMingLee-qxlzFZb89ZlEgdzP
@@ -56,15 +57,22 @@ if ($id) {
         }
 
         if (isset($clip_url) && $clip_url) {
-            $video = $client->request('GET', $clip_url, ['stream' => true]);
-            header('Content-Type: video/mp4');
-            header('Content-Length: ' . $video->getHeaderLine('Content-Length'));
+            if ($url == 'false') {
+                // render as a video source file
+                $video = $client->request('GET', $clip_url, ['stream' => true]);
+                header('Content-Type: video/mp4');
+                header('Content-Length: ' . $video->getHeaderLine('Content-Length'));
 
-            $body = $video->getBody();
-            while (!$body->eof()) {
-                echo $body->read(8192);
+                $body = $video->getBody();
+                while (!$body->eof()) {
+                    echo $body->read(8192);
+                }
+                exit();
+            } else {
+                // redirect to video clip url
+                header('Location: ' . $clip_url, true, 302);
+                exit();
             }
-            exit();
         }
     }
 
