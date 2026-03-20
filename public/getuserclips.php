@@ -151,7 +151,7 @@ if ($channel) {
                             "duration" => $data['duration'],
                             "vod_offset" => $data['vod_offset'],
                             "is_featured" => $data['is_featured'],
-                            "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id']
+                            "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true'
                         ];
                     }
                 }
@@ -261,7 +261,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 "duration" => $data['duration'],
                 "vod_offset" => $data['vod_offset'],
                 "is_featured" => $data['is_featured'],
-                "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id']
+                "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true'
             ];
         }
 
