@@ -3,6 +3,7 @@
  Copyright © 2016 Florian Nicolas
  Licensed under the MIT license.
  https://github.com/ticlekiwi/API-Documentation-HTML-Template
+ Updated: 03-20-2026
  !-->
 <!DOCTYPE html>
 <html class="no-js" lang="en">
