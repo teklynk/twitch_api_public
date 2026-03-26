@@ -5,33 +5,39 @@
  * Use this pattern to cache responses from the Twitch API to reduce rate limit usage.
  */
 
-// 1. Check if the extension is available
-if (!class_exists('Memcached')) {
-    die("Error: The php-memcached extension is not installed or enabled.");
+// Initialize Memcached and add the server
+if (class_exists('Memcached')) {
+    $memcached = new Memcached();
+    // Check if running in Docker (memcached hostname resolves)
+    if (gethostbyname('memcached') !== 'memcached') {
+        $memcached->addServer("memcached", 11211);
+    } else {
+        $memcached->addServer("127.0.0.1", 11211);
+    }
+} else {
+    echo "Memcached is not found.";
 }
 
-// 2. Initialize Memcached and add the server
-$memcached = new Memcached();
-$memcached->addServer('memcached', 11211);
+$cacheTTL = 300; // Cache TTL in seconds
 
-// 3. Define a unique key for the data you want to cache
-$cacheKey = 'twitch_api_status_example';
+// Define a unique key for the data you want to cache
+$cacheKey = 'twitch_api_memcached_test';
 
-// 4. Try to retrieve the data from cache
+// Try to retrieve the data from cache
 $data = $memcached->get($cacheKey);
 
 if ($memcached->getResultCode() === Memcached::RES_NOTFOUND) {
     echo "Cache MISS: Fetching data from source...\n";
 
-    // Simulate an expensive API request (e.g., calling Twitch API via Guzzle)
+    // Simulate API request
     $data = [
         'status' => 'online',
         'viewers' => 1500,
         'timestamp' => time()
     ];
 
-    // 5. Store in cache for 5 minutes (300 seconds)
-    $memcached->set($cacheKey, $data, 300);
+    // Store in cache 
+    $memcached->set($cacheKey, $data, $cacheTTL);
 } else {
     echo "Cache HIT: Serving data from memory.\n";
 }
