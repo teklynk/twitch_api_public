@@ -75,19 +75,33 @@ if ($channel || isset($_GET['id'])) {
 
         if ($userStatus == 200 && count($userResult['data']) > 0) {
             $broadcasterId = $userResult['data'][0]['id'];
-            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId;
+            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&first=25";
             $pagination = true;
+            $maxPages = 4; // Fetch up to 100 segments (4 * 25)
+            $pageCount = 0;
 
-            while ($pagination) {
-                $response = $client->request('GET', $url, [
-                    'headers' => $headers
-                ]);
+            while ($pagination && $pageCount < $maxPages) {
+                $pageCount++;
+                try {
+                    $response = $client->request('GET', $url, [
+                        'headers' => $headers
+                    ]);
+                } catch (\GuzzleHttp\Exception\ClientException $e) {
+                    if ($e->getResponse() && $e->getResponse()->getStatusCode() == 429) {
+                        break; // Stop loop and return partial data already collected
+                    }
+                    throw $e;
+                }
 
                 $scheduleData = json_decode($response->getBody(), true);
-                $ItemsArray = array_merge($ItemsArray, $scheduleData['data']['segments']);
 
-                if (isset($scheduleData['pagination']['cursor'])) {
-                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&after=" . $scheduleData['pagination']['cursor'];
+                if (isset($scheduleData['data']['segments'])) {
+                    $ItemsArray = array_merge($ItemsArray, $scheduleData['data']['segments']);
+                }
+
+                if (isset($scheduleData['pagination']['cursor']) && !empty($scheduleData['pagination']['cursor'])) {
+                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&after=" . $scheduleData['pagination']['cursor'] . "&first=25";
+                    usleep(100000); // 100ms delay to prevent "Zergling rush" rate limit
                 } else {
                     $pagination = false;
                 }
