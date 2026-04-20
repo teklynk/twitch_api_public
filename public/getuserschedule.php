@@ -13,6 +13,10 @@ $headers = [
 $ItemsArray = [];
 $ical = isset($_GET['ical']) ? $_GET['ical'] : false;
 $html = isset($_GET['html']) ? $_GET['html'] : false;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 0;
+if ($limit > 100) {
+    $limit = 100;
+}
 
 $channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
 
@@ -34,7 +38,7 @@ if (class_exists('Memcached')) {
     } else {
         $mem->addServer("127.0.0.1", 11211);
     }
-    $cacheKey = 'twitch_user_schedule_' . md5(json_encode([$channel, $_GET['id'] ?? '', $ical, $html]));
+    $cacheKey = 'twitch_user_schedule_' . md5(json_encode([$channel, $_GET['id'] ?? '', $ical, $html, $limit]));
     $cached = $mem->get($cacheKey);
 }
 
@@ -75,12 +79,15 @@ if ($channel || isset($_GET['id'])) {
 
         if ($userStatus == 200 && count($userResult['data']) > 0) {
             $broadcasterId = $userResult['data'][0]['id'];
-            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&first=25";
+
+            // Determine how many segments to request per page (max 25)
+            $first = ($limit > 0 && $limit < 25) ? $limit : 25;
+            $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&first=" . $first;
             $pagination = true;
-            $maxPages = 4; // Fetch up to 100 segments (4 * 25)
+            $maxPages = ($limit > 0) ? ceil($limit / $first) : 4; // Fetch up to requested limit or 100 segments
             $pageCount = 0;
 
-            while ($pagination && $pageCount < $maxPages) {
+            while ($pagination && $pageCount < $maxPages && ($limit <= 0 || count($ItemsArray) < $limit)) {
                 $pageCount++;
                 try {
                     $response = $client->request('GET', $url, [
@@ -100,11 +107,15 @@ if ($channel || isset($_GET['id'])) {
                 }
 
                 if (isset($scheduleData['pagination']['cursor']) && !empty($scheduleData['pagination']['cursor'])) {
-                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&after=" . $scheduleData['pagination']['cursor'] . "&first=25";
+                    $url = "https://api.twitch.tv/helix/schedule?broadcaster_id=" . $broadcasterId . "&after=" . $scheduleData['pagination']['cursor'] . "&first=" . $first;
                     usleep(100000); // 100ms delay to prevent "Zergling rush" rate limit
                 } else {
                     $pagination = false;
                 }
+            }
+
+            if ($limit > 0) {
+                $ItemsArray = array_slice($ItemsArray, 0, $limit);
             }
 
             if ($ical) {
