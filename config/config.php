@@ -20,6 +20,9 @@ define('TWITCH_SHA256HASH', '4f35f1ac933d76b1da008c806cd5546a7534dfaff83e033a422
 $authFile = __DIR__ . '/.auth';
 $ignoreKeywords = array("http", "https", "twitch.tv");
 
+// Define if cache should be disabled
+define('DISABLE_CACHE', isset($_GET['cache']) && $_GET['cache'] === 'false');
+
 // Instantiate DotEnv
 $dotenv = new Dotenv(__DIR__ . '/../', '.env');
 $dotenv->load();

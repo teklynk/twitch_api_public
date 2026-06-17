@@ -22,7 +22,7 @@ if ($id) {
     $cacheTTL = 3600; // 1 hour
 
     $mem = null;
-    if (class_exists('Memcached')) {
+    if (class_exists('Memcached') && !DISABLE_CACHE) {
         $mem = new Memcached();
         if (gethostbyname('memcached') !== 'memcached') {
             $mem->addServer("memcached", 11211);

@@ -36,7 +36,7 @@ $cacheTTL = 3600; // 1 hour
 
 $cached = null;
 $mem = null;
-if (class_exists('Memcached')) {
+if (class_exists('Memcached') && !DISABLE_CACHE) {
     $mem = new Memcached();
     // Check if running in Docker (memcached hostname resolves)
     if (gethostbyname('memcached') !== 'memcached') {
