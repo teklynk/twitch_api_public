@@ -12,7 +12,6 @@ $headers = [
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
-$limit = isset($_GET['limit']) ? $_GET['limit'] : 100;
 $random = isset($_GET['random']) ? $_GET['random'] : 'false';
 $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
@@ -59,10 +58,11 @@ if ($mem) {
 }
 
 $itemsArray = [];
+$totalItems = 0;
 
-if ($limit > 100) {
-    $limit = 100;
-}
+// Get the maximum number of clips to fetch
+$maxClips = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+$maxClips = min($maxClips, 500); // Cap at 500
 
 if (!empty($start_date)) {
     $start_dateVar = "&started_at=" . $start_date;
@@ -90,47 +90,55 @@ if ($channel) {
 
         // check if http status is good and that there is data/clips
         if ($userStatus == 200 && count($userResult['data']) > 0) {
-            // Get user clips
-            $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $start_dateVar . $end_dateVar;
-            $response = $client->request('GET', $url, [
-                'headers' => $headers
-            ]);
+            // Get clips with pagination support
+            $cursor = null;
+            $clipsCollected = 0;
+            $batches = 0;
 
-            $userStatus = $response->getStatusCode();
+            // Loop to fetch clips in batches of 100 until we have enough or no more
+            while ($clipsCollected < $maxClips) {
+                $batches++;
 
-            // all clips data
-            $userData = json_decode($response->getBody(), true);
+                // Build the clips URL
+                $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . $start_dateVar . $end_dateVar;
 
-            if ($userStatus == 200 && count($userData['data']) > 0) {
+                // Add cursor parameter if we have one (from pagination object)
+                if ($cursor !== null) {
+                    $url .= "&cursor=" . $cursor;
+                }
+
+                $response = $client->request('GET', $url, [
+                    'headers' => $headers
+                ]);
+
+                $userStatus = $response->getStatusCode();
+                $userData = json_decode($response->getBody(), true);
+
+                if ($userStatus != 200 || !isset($userData['data']) || count($userData['data']) === 0) {
+                    break; // No more clips available
+                }
 
                 foreach ($userData['data'] as $data) {
-
                     $inc_data = false;
 
                     // Filter for creator_name and prefer_featured
                     if (!empty($creator_name) && strtolower($data['creator_name']) == $creator_name) {
-                        // &creator_name set and this clip creator by that user
                         if (!empty($prefer_featured) && $prefer_featured == "true") {
-                            // &prefer_featured=true
                             $inc_data = $data['is_featured'] == "true";
                         } else {
-                            // &prefer_featured not set
                             $inc_data = true;
                         }
                     } elseif (empty($creator_name)) {
-                        // &creator_name not set
                         if (!empty($prefer_featured) && $prefer_featured == "true") {
-                            // &prefer_featured=true
                             $inc_data = $data['is_featured'] == "true";
                         } else {
-                            // &prefer_featured not set
                             $inc_data = true;
                         }
                     }
 
                     if ($inc_data) {
-
                         $itemCount++;
+                        $clipsCollected++;
 
                         $itemsArray[] = [
                             "item" => $itemCount,
@@ -156,58 +164,61 @@ if ($channel) {
                     }
                 }
 
-                $dataArray = [
-                    "data" => $itemsArray
-                ];
-
-                // Pull a single random clip   IE: &random=true
-                if (!empty($random) && $random == "true") {
-                    $array_item = [];
-                    $array_count = count($dataArray['data']);
-                    $random_cnt = !empty($_GET['count']) ? min((INT) $_GET['count'], $array_count) : 1;
-
-                    $random_keys = array_rand($dataArray['data'], $random_cnt);
-                    if ($random_cnt == 1) {
-                        $array_item[] = $dataArray['data'][$random_keys];
-                    } else {
-                        foreach ($random_keys as $key) {
-                            $array_item[] = $dataArray['data'][$key];
-                        }
-                    }
-
-                    $array_data = [
-                        "data" => $array_item
-                    ];
-
-                    header('Content-type: application/json');
-                    echo json_encode($array_data);
+                // Get cursor for next page from pagination object
+                if (!empty($userData['pagination']['cursor'])) {
+                    $cursor = $userData['pagination']['cursor'];
                 } else {
-
-                    if ($shuffle === 'true') {
-                        $itemsArray = array_values($itemsArray); // Reset keys after loop
-                        shuffle($itemsArray); // Shuffle the array
-                        $dataArray = [
-                            "data" => $itemsArray
-                        ];
-                    } else {
-                        $dataArray = [
-                            "data" => $itemsArray
-                        ];
-                    }
-
-                    // Return all clips
-                    header('Content-type: application/json');
-                    echo json_encode($dataArray);
+                    break; // No more pages
                 }
 
-            } else {
-                // Return an empty data array if user/channel not found
-                header('Content-type: application/json');
-                echo json_encode(["data" => []]);
+                // Rate limiting: wait between requests if we're hitting limits
+                if ($batches >= 5 || $clipsCollected >= $maxClips) {
+                    break;
+                }
             }
+
+            // Check if we should return random clips
+            if (!empty($random) && $random == "true" && count($itemsArray) > 0) {
+                $array_item = [];
+                $array_count = count($itemsArray);
+                $random_cnt = !empty($_GET['count']) ? min((int)$_GET['count'], $array_count) : 1;
+
+                $random_keys = array_rand($itemsArray, $random_cnt);
+                if ($random_cnt == 1) {
+                    $array_item[] = $itemsArray[$random_keys];
+                } else {
+                    foreach ($random_keys as $key) {
+                        $array_item[] = $itemsArray[$key];
+                    }
+                }
+
+                $array_data = [
+                    "data" => $array_item
+                ];
+
+                header('Content-type: application/json');
+                echo json_encode($array_data);
+            } else {
+                // Check if shuffle is enabled
+                if ($shuffle === 'true') {
+                    $itemsArray = array_values($itemsArray);
+                    shuffle($itemsArray);
+                }
+
+                $dataArray = [
+                    "data" => $itemsArray,
+                    "total" => $clipsCollected,
+                    "requested" => $maxClips,
+                    "batches" => $batches
+                ];
+
+                header('Content-type: application/json');
+                echo json_encode($dataArray);
+            }
+
         } else {
             // return an empty data array/object
-            $dataArray = ["data" => []];
+            $dataArray = ["data" => [], "error" => "User not found"];
             header('Content-type: application/json');
             echo json_encode($dataArray);
         }
@@ -219,27 +230,22 @@ if ($channel) {
 } elseif (!isset($_GET['id']) && empty($_GET['id'])) {
     // return an empty data array/object
     $dataArray = ["data" => []];
-
     header('Content-type: application/json');
     echo json_encode($dataArray);
 }
 
 // Get clip by its ID
-// https://example.com/getuserclips.php?id=LaconicCulturedPieMingLee-qxlzFZb89ZlEgdzP
 if (isset($_GET['id']) && !empty($_GET['id'])) {
 
-    // Get user clips
     $response = $client->request('GET', "https://api.twitch.tv/helix/clips?id=" . $id, [
         'headers' => $headers
     ]);
     $userStatus = $response->getStatusCode();
 
     if ($userStatus == 200) {
-        // all clips data
         $userData = json_decode($response->getBody(), true);
 
         foreach ($userData['data'] as $data) {
-
             $itemCount++;
 
             $itemsArray[] = [
@@ -268,15 +274,13 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $dataArray = [
             "data" => $itemsArray
         ];
-        
+
         header('Content-type: application/json');
         echo json_encode($dataArray);
     } else {
-        // return an empty data array/object
         $dataArray = [
             "data" => []
         ];
-
         header('Content-type: application/json');
         echo json_encode($dataArray);
     }
