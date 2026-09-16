@@ -22,6 +22,9 @@ $ignore = isset($_GET['ignore']) ? $_GET['ignore'] : '';
 $itemCount = 0;
 $shuffle = isset($_GET['shuffle']) ? $_GET['shuffle'] : 'false';
 $channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+// Get the maximum number of clips to fetch
+$maxClips = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+$maxClips = min($maxClips, 500); // Cap at 500
 
 foreach ($ignoreKeywords as $keyword) {
     if (preg_match("/$keyword/", $channel)) {
@@ -43,7 +46,7 @@ if (class_exists('Memcached') && !DISABLE_CACHE) {
     } else {
         $mem->addServer("127.0.0.1", 11211);
     }
-    $cacheKey = 'twitch_clips_' . md5(json_encode([$channel, $id, $limit, $random, $start_date, $end_date, $prefer_featured, $creator_name, $shuffle, ($random == 'true' ? ($_GET['count'] ?? '1') : '')]));
+    $cacheKey = 'twitch_clips_' . md5(json_encode([$channel, $id, $maxClips, $random, $start_date, $end_date, $prefer_featured, $creator_name, $shuffle, ($random == 'true' ? ($_GET['count'] ?? '1') : '')]));
     $cached = $mem->get($cacheKey);
 }
 
@@ -59,10 +62,6 @@ if ($mem) {
 
 $itemsArray = [];
 $totalItems = 0;
-
-// Get the maximum number of clips to fetch
-$maxClips = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
-$maxClips = min($maxClips, 500); // Cap at 500
 
 if (!empty($start_date)) {
     $start_dateVar = "&started_at=" . $start_date;
@@ -95,10 +94,11 @@ if ($channel) {
             $clipsCollected = 0;
 
             // Loop to fetch clips
+            //$pagination && $pageCount < $maxPages && ($limit <= 0 || count($ItemsArray) < $limit)
             while ($clipsCollected < $maxClips) {
 
                 // Build the clips URL
-                $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . $start_dateVar . $end_dateVar;
+                $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=100" . $start_dateVar . $end_dateVar;
 
                 // Add cursor parameter if we have one (from pagination object)
                 if ($cursor !== null) {
