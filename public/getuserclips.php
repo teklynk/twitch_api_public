@@ -98,7 +98,7 @@ if ($channel) {
             while ($clipsCollected < $maxClips) {
 
                 // Build the clips URL
-                $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=100" . $start_dateVar . $end_dateVar;
+                $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . $start_dateVar . $end_dateVar;
 
                 // Add cursor parameter if we have one (from pagination object)
                 if ($cursor !== null) {
