@@ -162,6 +162,7 @@ if ($channel) {
 
                 if (isset($userData['pagination']['cursor']) && !empty($userData['pagination']['cursor'])) {
                     $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $broadcasterId . "&after=" . $userData['pagination']['cursor'] . "&first=" . $first . $start_dateVar . $end_dateVar;
+                    usleep(100000); // 100ms delay to prevent "Zergling rush" rate limit
                 } else {
                     $pagination = false;
                 }
