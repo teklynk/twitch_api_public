@@ -93,11 +93,9 @@ if ($channel) {
             // Get clips with pagination support
             $cursor = null;
             $clipsCollected = 0;
-            $batches = 0;
 
-            // Loop to fetch clips in batches of 100 until we have enough or no more
+            // Loop to fetch clips
             while ($clipsCollected < $maxClips) {
-                $batches++;
 
                 // Build the clips URL
                 $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . $start_dateVar . $end_dateVar;
@@ -170,11 +168,6 @@ if ($channel) {
                 } else {
                     break; // No more pages
                 }
-
-                // Rate limiting: wait between requests if we're hitting limits
-                if ($batches >= 5 || $clipsCollected >= $maxClips) {
-                    break;
-                }
             }
 
             // Check if we should return random clips
@@ -206,10 +199,7 @@ if ($channel) {
                 }
 
                 $dataArray = [
-                    "data" => $itemsArray,
-                    "total" => $clipsCollected,
-                    "requested" => $maxClips,
-                    "batches" => $batches
+                    "data" => $itemsArray
                 ];
 
                 header('Content-type: application/json');
