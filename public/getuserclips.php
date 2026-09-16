@@ -60,10 +60,6 @@ if ($mem) {
 
 $itemsArray = [];
 
-if ($limit > 100) {
-    $limit = 100;
-}
-
 if (!empty($start_date)) {
     $start_dateVar = "&started_at=" . $start_date;
 } else {
