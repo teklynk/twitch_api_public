@@ -9,11 +9,19 @@
   },
   {
     "name": "Twitch Emote Wall Overlay",
-    "url": "https://twitch-chat-emotes.pages.dev"
+    "url": "https://twitch-chat-emotes.teklynk.com"
   },
   {
     "name": "Twitch Fart Bot",
     "url": "https://twitch-fart-bot.teklynk.com"
+  },
+  {
+    "name": "Twitch Chat Overlay",
+    "url": "https://twitchchatoverlay.teklynk.com"
+  },
+  {
+    "name": "Twitch Horizontal Chat Overlay",
+    "url": "https://twitchchathorizontal.teklynk.com"
   },
   {
     "name": "Twitch Multi-Viewer",

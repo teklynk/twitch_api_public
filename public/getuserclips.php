@@ -36,7 +36,7 @@ $cacheTTL = 3600; // 1 hour
 
 $cached = null;
 $mem = null;
-if (class_exists('Memcached')) {
+if (class_exists('Memcached') && !DISABLE_CACHE) {
     $mem = new Memcached();
     // Check if running in Docker (memcached hostname resolves)
     if (gethostbyname('memcached') !== 'memcached') {
@@ -60,8 +60,8 @@ if ($mem) {
 
 $itemsArray = [];
 
-if ($limit > 100) {
-    $limit = 100;
+if ($limit > 500) {
+    $limit = 500;
 }
 
 if (!empty($start_date)) {
@@ -90,18 +90,22 @@ if ($channel) {
 
         // check if http status is good and that there is data/clips
         if ($userStatus == 200 && count($userResult['data']) > 0) {
-            // Get user clips
-            $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $userResult['data'][0]['id'] . "&first=" . trim(strtolower($limit)) . $start_dateVar . $end_dateVar;
-            $response = $client->request('GET', $url, [
-                'headers' => $headers
-            ]);
+            $broadcasterId = $userResult['data'][0]['id'];
+            $first = min((int) $limit, 100);
+            $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $broadcasterId . "&first=" . $first . $start_dateVar . $end_dateVar;
+            $pagination = true;
 
-            $userStatus = $response->getStatusCode();
+            while ($pagination && count($itemsArray) < $limit) {
+                $response = $client->request('GET', $url, [
+                    'headers' => $headers
+                ]);
 
-            // all clips data
-            $userData = json_decode($response->getBody(), true);
+                $userStatus = $response->getStatusCode();
+                $userData = json_decode($response->getBody(), true);
 
-            if ($userStatus == 200 && count($userData['data']) > 0) {
+                if ($userStatus != 200 || empty($userData['data'])) {
+                    break;
+                }
 
                 foreach ($userData['data'] as $data) {
 
@@ -156,6 +160,15 @@ if ($channel) {
                     }
                 }
 
+                if (isset($userData['pagination']['cursor']) && !empty($userData['pagination']['cursor'])) {
+                    $url = "https://api.twitch.tv/helix/clips?broadcaster_id=" . $broadcasterId . "&after=" . $userData['pagination']['cursor'] . "&first=" . $first . $start_dateVar . $end_dateVar;
+                    usleep(100000); // 100ms delay to prevent "Zergling rush" rate limit
+                } else {
+                    $pagination = false;
+                }
+            }
+
+            if (count($itemsArray) > 0) {
                 $dataArray = [
                     "data" => $itemsArray
                 ];
@@ -199,7 +212,6 @@ if ($channel) {
                     header('Content-type: application/json');
                     echo json_encode($dataArray);
                 }
-
             } else {
                 // Return an empty data array if user/channel not found
                 header('Content-type: application/json');
