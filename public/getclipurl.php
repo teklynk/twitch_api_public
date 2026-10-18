@@ -12,6 +12,7 @@ $headers = [
 
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : 'true';
+$quality = isset($_GET['quality']) ? $_GET['quality'] : '720';
 
 // Get clip url by its ID and return it as a Content-Type: video/mp4
 // https://example.com/getclipurl.php?id=LaconicCulturedPieMingLee-qxlzFZb89ZlEgdzP
@@ -68,7 +69,17 @@ if ($id) {
 
                     $clips_signature = $clips_array[0]['data']['clip']['playbackAccessToken']['signature'];
                     $clips_token = urlencode($clips_array[0]['data']['clip']['playbackAccessToken']['value']);
-                    $clips_video_source = $clips_array[0]['data']['clip']['videoQualities'][0]['sourceURL'];
+                    $video_qualities = $clips_array[0]['data']['clip']['videoQualities'];
+                    foreach ($video_qualities as $video_quality) {
+                        if (isset($video_quality['quality']) && (string) $video_quality['quality'] === (string) $quality) {
+                            $clips_video_source = $video_quality['sourceURL'];
+                            break;
+                        }
+                    }
+
+                    if (!isset($clips_video_source) && isset($video_qualities[0]['sourceURL'])) {
+                        $clips_video_source = $video_qualities[0]['sourceURL'];
+                    }
 
                     $clip_url = $clips_video_source . '?sig=' . $clips_signature . '&token=' . $clips_token;
                     break;
