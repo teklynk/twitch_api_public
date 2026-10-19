@@ -23,6 +23,7 @@ $ignore = isset($_GET['ignore']) ? $_GET['ignore'] : '';
 $itemCount = 0;
 $shuffle = isset($_GET['shuffle']) ? $_GET['shuffle'] : 'false';
 $channel = isset($_GET['channel']) ? trim(strtolower($_GET['channel'])) : '';
+$quality = isset($_GET['quality']) ? trim($_GET['quality']) : '720';
 
 foreach ($ignoreKeywords as $keyword) {
     if (preg_match("/$keyword/", $channel)) {
@@ -155,7 +156,7 @@ if ($channel) {
                             "duration" => $data['duration'],
                             "vod_offset" => $data['vod_offset'],
                             "is_featured" => $data['is_featured'],
-                            "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true&quality=720'
+                            "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true&quality=' . $quality
                         ];
                     }
                 }
@@ -273,7 +274,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 "duration" => $data['duration'],
                 "vod_offset" => $data['vod_offset'],
                 "is_featured" => $data['is_featured'],
-                "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true&quality=720'
+                "clip_url" => $protocol . $host . '/getclipurl.php?id=' . $data['id'] . '&url=true&quality=' . $quality
             ];
         }
 

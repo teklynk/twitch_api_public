@@ -32,7 +32,7 @@ Result example :
       "duration": 59.9,
       "vod_offset": 228,
       "is_featured": false,
-      "clip_url": "http://localhost:8080/getclipurl.php?id=CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4"
+      "clip_url": "http://localhost:8080/getclipurl.php?id=CrispyJollyGullHassaanChop-nPlLKGxGRcBj37e4&url=true&quality=720"
     },
     {
       "item": 2,
@@ -53,7 +53,7 @@ Result example :
       "duration": 12.8,
       "vod_offset": 2202,
       "is_featured": false,
-      "clip_url": "http://localhost:8080/getclipurl.php?id=VastOutstandingMinkNononoCat-hjFbXj-a8-WvyN0z"
+      "clip_url": "http://localhost:8080/getclipurl.php?id=VastOutstandingMinkNononoCat-hjFbXj-a8-WvyN0z&url=true&quality=720"
     }
   ]
 }
@@ -118,6 +118,16 @@ Result example :
         <td>count</td>
         <td>Integer</td>
         <td>(example) Used with `random`. IE: ?channel=twitch&random=true&count=4</td>
+    </tr>
+    <tr>
+        <td>quality</td>
+        <td>String</td>
+        <td>(example) Video quality. IE: ?channel=twitch&quality=720</td>
+    </tr>
+    <tr>
+        <td>url</td>
+        <td>Boolean</td>
+        <td>(example) Return the direct video URL. IE: ?channel=twitch&url=true</td>
     </tr>
     </tbody>
 </table>

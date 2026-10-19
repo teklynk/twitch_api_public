@@ -12,7 +12,7 @@ $headers = [
 
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 $url = isset($_GET['url']) ? $_GET['url'] : 'true';
-$quality = isset($_GET['quality']) ? $_GET['quality'] : '720';
+$quality = isset($_GET['quality']) ? trim($_GET['quality']) : '720';
 
 // Get clip url by its ID and return it as a Content-Type: video/mp4
 // https://example.com/getclipurl.php?id=LaconicCulturedPieMingLee-qxlzFZb89ZlEgdzP
